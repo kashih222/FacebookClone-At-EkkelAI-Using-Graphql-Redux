@@ -1,26 +1,7 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import {
-  FaFacebook,
-  FaSearch,
-  FaHome,
-  FaPlayCircle,
-  FaStore,
-  FaUsers,
-  FaGamepad,
-  FaBell,
-  FaCommentDots,
-  FaCaretDown,
-} from "react-icons/fa";
-import {
-  LogOut,
-  Logs,
-  MessageCircleQuestionMark,
-  MessageSquareDot,
-  Moon,
-  Settings,
-  UserRoundPen,
-} from "lucide-react";
+import { FaFacebook, FaSearch, FaHome, FaPlayCircle, FaStore, FaUsers, FaGamepad, FaBell, FaCommentDots, FaCaretDown, } from "react-icons/fa";
+import { LogOut, Logs, MessageCircleQuestionMark, MessageSquareDot, Moon, Settings, UserRoundPen, } from "lucide-react";
 
 const Navbar = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -73,7 +54,7 @@ const Navbar = () => {
             {navItems.map((item, index) => (
               <button
                 key={index}
-                className={`flex items-center justify-center w-20 h-14 rounded-md hover:bg-gray-100`}
+                className={`flex items-center justify-center w-20 h-14 rounded-md hover:bg-gray-100 cursor-pointer`}
                 title={item.label}
               >
                 {item.icon}
@@ -83,19 +64,18 @@ const Navbar = () => {
 
           {/* Right Section: User Actions */}
           <div className="flex items-center space-x-2 flex-1 justify-end">
-             <button className="hidden md:flex items-center justify-center w-10 h-10 bg-gray-100 rounded-full hover:bg-gray-200 text-gray-700 relative">
+             <button className="hidden md:flex items-center justify-center w-10 h-10 bg-gray-100 rounded-full hover:bg-gray-200 text-gray-700 relative cursor-pointer">
               <Logs className="text-xl"/> 
               
             </button>
-            {/* Messenger */}
-            <button className="hidden md:flex items-center justify-center w-10 h-10 bg-gray-100 rounded-full hover:bg-gray-200 text-gray-700 relative">
+            <button className="hidden md:flex items-center justify-center w-10 h-10 bg-gray-100 rounded-full hover:bg-gray-200 text-gray-700 relative cursor-pointer">
               <FaCommentDots className="text-xl" />
               <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
                 3
               </span>
             </button>
 
-            <button className="hidden md:flex items-center justify-center w-10 h-10 bg-gray-100 rounded-full hover:bg-gray-200 text-gray-700 relative">
+            <button className="hidden md:flex items-center justify-center w-10 h-10 bg-gray-100 rounded-full hover:bg-gray-200 text-gray-700 relative cursor-pointer">
               <FaBell className="text-xl" />
               <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
                 5
@@ -104,7 +84,7 @@ const Navbar = () => {
 
             {/* Account Menu */}
             <div className="relative group">
-              <button className="flex items-center space-x-2 bg-gray-100 hover:bg-gray-200 rounded-full p-1">
+              <button className="flex items-center space-x-2 bg-gray-100 hover:bg-gray-200 rounded-full p-1 cursor-pointer">
                 <div className="w-8 h-8 bg-linear-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center text-white font-bold">
                   U
                 </div>

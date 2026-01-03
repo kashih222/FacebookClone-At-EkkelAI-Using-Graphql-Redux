@@ -14,11 +14,11 @@ import { MdGroups2 } from "react-icons/md";
 
 const LeftSidebar = () => {
   return (
-    <div className="sticky top-20 h-screen ">
+    <div className="sticky top-0 h-[calc(100vh-90px)] ">
       {/* User Profile */}
-      <div className="mb-6 h-[calc(100vh-90px)] overflow-auto">
+      <div className="mb-6 h-[calc(100vh-150px)]  overflow-auto">
         <div className="flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-200 cursor-pointer">
-          <div className="w-8 h-8 bg-linear-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center text-white font-bold">
+          <div className="w-10 h-10 bg-linear-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center text-white font-bold">
             U
           </div>
           <span className="font-medium">User Name</span>

@@ -12,23 +12,24 @@ const HomePage = () => {
       
       <div className=" mx-auto px-4 pt-4">
         <div className="flex gap-4">
-          <div className="hidden lg:block w-64 shrink-0">
+          <div className="hidden lg:block w-74 shrink-0">
             <LeftSidebar />
           </div>
           
           <div className="flex-1 max-w-2xl mx-auto">
+             <div className="mb-4">
+              <CreatePost />
+            </div>
             <div className="mb-4">
               <Stories />
             </div>
-            <div className="mb-4">
-              <CreatePost />
-            </div>
+           
             <div>
               <Feed />
             </div>
           </div>
           
-          <div className="hidden xl:block w-80 shrink-0">
+          <div className="hidden xl:block  shrink-0 w-74">
             <RightSidebar />
           </div>
 
