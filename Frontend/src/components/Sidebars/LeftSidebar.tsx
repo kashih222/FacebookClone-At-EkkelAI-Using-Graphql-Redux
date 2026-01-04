@@ -11,6 +11,7 @@ import {
 import MetaLogo from "../../assets/Meta-AI-Logo-Mark-PNG.png";
 import { FaSave } from "react-icons/fa";
 import { MdGroups2 } from "react-icons/md";
+import { Link } from "react-router-dom";
 
 const LeftSidebar = () => {
   return (
@@ -29,12 +30,14 @@ const LeftSidebar = () => {
           </div>
           <span className="font-medium">Meta AI</span>
         </div>
-        <div className="flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-200 cursor-pointer">
+        <Link to={"/friends"}>
+          <div className="flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-200 cursor-pointer">
           <div className="rounded-full flex items-center justify-center text-purple-500 font-bold">
             <Users className=" w-10 h-10" />
           </div>
           <span className="font-medium">Friends</span>
         </div>
+        </Link>
         <div className="flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-200 cursor-pointer">
           <div className="rounded-full flex items-center justify-center text-purple-500 font-bold">
             <ClockCheck className="  w-10 h-10" />

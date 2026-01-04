@@ -2,7 +2,9 @@ import { Routes, Route } from "react-router-dom";
 import Login from "./components/LoginPage/Login";
 import SignUp from "./components/SignUpPage/SignUp";
 import HomePage from "./components/HomePage/HomePage";
-import CreateStoryPage from "./components/HomePage/StoriesPage/CreateStoryPage";
+import CreateStoryPage from "./components/StoriesPage/CreateStoryPage";
+import FriendsPage from "./components/FriendsPage/FriendsPage";
+import ProfilePage from "./components/ProfilePage/ProfilePage";
 
 const App = () => {
   return (
@@ -12,6 +14,8 @@ const App = () => {
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<SignUp />} />
         <Route path="/create-story" element={<CreateStoryPage />} />
+        <Route path="/friends" element={<FriendsPage />} />
+        <Route path="/myprofile" element={<ProfilePage />} />
         
         <Route path="*" element={
           <div className="flex flex-col items-center justify-center h-screen">

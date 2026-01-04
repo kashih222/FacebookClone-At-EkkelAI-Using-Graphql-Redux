@@ -1,6 +1,6 @@
 import { useState } from "react";
-import Post from "../../HomePage/CreatePostPage/PostPage/Post";
-import CreatePost from "../../HomePage/CreatePostPage/CreatePost";
+import Post from "../CreatePostPage/PostPage/Post";
+import CreatePost from "../CreatePostPage/CreatePost";
 
 const Feed = () => {
   const posts = [

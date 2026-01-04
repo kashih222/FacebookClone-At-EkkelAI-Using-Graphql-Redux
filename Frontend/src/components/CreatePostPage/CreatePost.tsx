@@ -26,7 +26,7 @@ const CreatePost = () => {
           </div>
           <button
             onClick={() => setShowModal(true)}
-            className="flex-1 text-left w-full bg-gray-100 hover:bg-gray-200 text-gray-500 rounded-full px-4 py-3 transition-colors"
+            className="flex-1 text-left w-full cursor-pointer bg-gray-100 hover:bg-gray-200 text-gray-500 rounded-full px-4 py-3 transition-colors"
           >
             <span className="font-medium">What's on your mind, Unstop?</span>
           </button>
@@ -39,7 +39,7 @@ const CreatePost = () => {
               className="flex items-center space-x-2 px-3 py-2 rounded-lg hover:bg-gray-100 transition-colors"
             >
               <span className={` text-red-500`}>
-                <Video className="w-10 h-10" />
+                <Video className="w-10 h-10 cursor-pointer" />
               </span>
             </button>
             <button
@@ -47,7 +47,7 @@ const CreatePost = () => {
               className="flex items-center space-x-2 px-3 py-2 rounded-lg hover:bg-gray-100 transition-colors"
             >
               <span className={`text-xl text-green-500`}>
-                <BookImage className="w-8 h-8" />
+                <BookImage className="w-8 h-8 cursor-pointer" />
               </span>
             </button>
             <button
@@ -55,7 +55,7 @@ const CreatePost = () => {
               className="flex items-center space-x-2 px-3 py-2 rounded-lg hover:bg-gray-100 transition-colors"
             >
               <span className={`text-xl text-yellow-500`}>
-                <Smile className="w-8 h-8" />
+                <Smile className="w-8 h-8 cursor-pointer" />
               </span>
             </button>
           </div>
@@ -83,13 +83,13 @@ const CreatePost = () => {
                   U
                 </div>
                 <div className="relative inline-block">
-                  <p className="font-semibold">Unstop</p>
+                  <p className="font-semibold">Unstop Sale</p>
 
                   <button
                     onClick={() => setOpen(!open)}
-                    className="flex items-center space-x-1 bg-gray-100 hover:bg-gray-200 px-3 py-1 rounded-full text-sm mt-1"
+                    className="flex items-center cursor-pointer space-x-1 bg-gray-100 hover:bg-gray-200 px-3 py-1 rounded-full text-sm mt-1"
                   >
-                    <span className="text-gray-600"><Globe/></span>
+                    <span className="text-gray-600"><Globe className="w-4 h-4"/></span>
                     <span className="font-medium text-gray-700">
                       {visibility}
                     </span>
@@ -97,7 +97,7 @@ const CreatePost = () => {
                   </button>
 
                   {open && (
-                    <div className="absolute mt-2 w-32 bg-white border rounded-lg shadow-md z-10">
+                    <div className="absolute mt-2 w-32 bg-white border rounded-lg  shadow-md z-10 ">
                       {options.map((option) => (
                         <button
                           key={option}

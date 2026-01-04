@@ -1,13 +1,13 @@
 import Navbar from "../Navbar/Navbar";
 import LeftSidebar from "../Sidebars/LeftSidebar";
 import RightSidebar from "../Sidebars/RightSidebar";
-import Feed from "../HomePage/FeedPage/Feed";
-import CreatePost from "../HomePage/CreatePostPage/CreatePost";
-import Stories from "../HomePage/StoriesPage/Stories";
+import Feed from "../FeedPage/Feed";
+import CreatePost from "../CreatePostPage/CreatePost";
+import Stories from "../StoriesPage/Stories";
 
 const HomePage = () => {
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="min-h-screen bg-gray-100 mt-14">
       <Navbar />
       
       <div className=" mx-auto px-4 pt-4">

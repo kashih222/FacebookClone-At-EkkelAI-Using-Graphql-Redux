@@ -1,19 +1,32 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { FaFacebook, FaSearch, FaHome, FaPlayCircle, FaStore, FaUsers, FaGamepad, FaBell, FaCommentDots, FaCaretDown, } from "react-icons/fa";
-import { LogOut, Logs, MessageCircleQuestionMark, MessageSquareDot, Moon, Settings, UserRoundPen, } from "lucide-react";
+import {
+  FaFacebook,
+  FaSearch,
+  FaHome,
+  FaPlayCircle,
+  FaStore,
+  FaUsers,
+  FaGamepad,
+  FaBell,
+  FaCommentDots,
+  FaCaretDown,
+} from "react-icons/fa";
+import {
+  LogOut,
+  Logs,
+  MessageCircleQuestionMark,
+  MessageSquareDot,
+  Moon,
+  Settings,
+  UserRoundPen,
+} from "lucide-react";
 
 const Navbar = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const navigate = useNavigate();
 
-  const navItems = [
-    { icon: <FaHome className="text-2xl text-[#606366]" />, label: "Home", active: true },
-    { icon: <FaUsers className="text-2xl text-[#606366]" />, label: "Groups" },
-    { icon: <FaPlayCircle className="text-2xl text-[#606366]" />, label: "Watch" },
-    { icon: <FaStore className="text-2xl text-[#606366]" />, label: "Marketplace" },
-    { icon: <FaGamepad className="text-2xl text-[#606366]" />, label: "Gaming" },
-  ];
+
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -23,7 +36,7 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="sticky top-0 z-50 bg-white shadow-sm border-b border-gray-200">
+    <nav className="fixed top-0 w-full z-50 bg-white shadow-sm border-b border-gray-200">
       <div className=" mx-auto px-4">
         <div className="flex items-center justify-between h-14">
           {/* Left Section: Logo & Search */}
@@ -34,16 +47,16 @@ const Navbar = () => {
 
             <form
               onSubmit={handleSearch}
-              className="hidden md:block relative flex-1 max-w-md"
+              className="hidden md:block relative flex-1 max-w-md "
             >
-              <div className="relative">
+              <div className="relative ">
                 <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
                 <input
                   type="text"
                   placeholder="Search Facebook"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className=" pl-10 pr-4 py-2 bg-gray-100 rounded-3xl border-0 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white"
+                  className=" cursor-pointer pl-10 pr-4 py-2 bg-gray-100 rounded-3xl border-0 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white"
                 />
               </div>
             </form>
@@ -51,22 +64,41 @@ const Navbar = () => {
 
           {/* Center Section: Navigation Icons */}
           <div className="hidden lg:flex items-center justify-center flex-1 space-x-1">
-            {navItems.map((item, index) => (
-              <button
-                key={index}
-                className={`flex items-center justify-center w-20 h-14 rounded-md hover:bg-gray-100 cursor-pointer`}
-                title={item.label}
-              >
-                {item.icon}
-              </button>
-            ))}
+           <Link to={"/"}>
+            <button
+              className={`flex items-center justify-center w-20 h-14 rounded-md hover:bg-gray-100 cursor-pointer`}
+            >
+              <FaHome className="text-2xl text-[#606366]"/>
+            </button>
+           </Link>
+            <Link to={"/friends"}>
+             <button
+              className={`flex items-center justify-center w-20 h-14 rounded-md hover:bg-gray-100 cursor-pointer`}
+            >
+              <FaUsers className="text-2xl text-[#606366]"/>
+            </button>
+            </Link>
+             <button
+              className={`flex items-center justify-center w-20 h-14 rounded-md hover:bg-gray-100 cursor-pointer`}
+            >
+              <FaPlayCircle className="text-2xl text-[#606366]"/>
+            </button>
+             <button
+              className={`flex items-center justify-center w-20 h-14 rounded-md hover:bg-gray-100 cursor-pointer`}
+            >
+              <FaStore className="text-2xl text-[#606366]"/>
+            </button>
+             <button
+              className={`flex items-center justify-center w-20 h-14 rounded-md hover:bg-gray-100 cursor-pointer`}
+            >
+              <FaGamepad className="text-2xl text-[#606366]"/>
+            </button>
           </div>
 
           {/* Right Section: User Actions */}
           <div className="flex items-center space-x-2 flex-1 justify-end">
-             <button className="hidden md:flex items-center justify-center w-10 h-10 bg-gray-100 rounded-full hover:bg-gray-200 text-gray-700 relative cursor-pointer">
-              <Logs className="text-xl"/> 
-              
+            <button className="hidden md:flex items-center justify-center w-10 h-10 bg-gray-100 rounded-full hover:bg-gray-200 text-gray-700 relative cursor-pointer">
+              <Logs className="text-xl" />
             </button>
             <button className="hidden md:flex items-center justify-center w-10 h-10 bg-gray-100 rounded-full hover:bg-gray-200 text-gray-700 relative cursor-pointer">
               <FaCommentDots className="text-xl" />
@@ -93,9 +125,10 @@ const Navbar = () => {
               </button>
 
               {/* Account Dropdown */}
-              <div className="absolute right-0 mt-2 w-64 bg-[#FDFDFD] rounded-lg shadow-lg border border-gray-200 py-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+              <div className="absolute right-0 mt-2 w-84 bg-[#FDFDFD] rounded-lg shadow-lg border border-gray-200 py-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
                 <div className="px-4 py-3 border-b border-gray-100">
                   <div className="flex flex-col gap-4 bg-[#F2F2F2] p-4 rounded-xl">
+                   <Link to={"/myprofile"}>
                     <div className="flex items-center gap-2.5 bg-[#F2F2F2]">
                       <div className="w-10 h-10 bg-linear-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center text-white font-bold">
                         U
@@ -104,6 +137,7 @@ const Navbar = () => {
                         <p className="font-semibold">User Name</p>
                       </div>
                     </div>
+                   </Link>
                     <hr />
                     <div className="flex items-center bg-[#D6D9DD] rounded-xl gap-4 p-4 cursor-pointer">
                       <div>

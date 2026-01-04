@@ -23,7 +23,7 @@ const CreateStoryPage = () => {
           <div>
             <button
               onClick={handleBack}
-              className="flex items-center space-x-2 text-gray-600 hover:text-gray-800"
+              className="flex items-center space-x-2 text-gray-600 hover:text-gray-800 cursor-pointer"
             >
               <div className="h-10 w-10 rounded-full bg-gray-400 flex items-center justify-center">
                 <span className="font-medium">
@@ -88,7 +88,8 @@ const CreateStoryPage = () => {
               <div className="absolute right-0 mt-2 w-64 bg-[#FDFDFD] rounded-lg shadow-lg border border-gray-200 py-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
                 <div className="px-4 py-3 border-b border-gray-100">
                   <div className="flex flex-col gap-4 bg-[#F2F2F2] p-4 rounded-xl">
-                    <div className="flex items-center gap-2.5 bg-[#F2F2F2]">
+                   <Link to={"/myprofile"}>
+                     <div className="flex items-center gap-2.5 bg-[#F2F2F2]">
                       <div className="w-10 h-10 bg-linear-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center text-white font-bold">
                         U
                       </div>
@@ -96,6 +97,7 @@ const CreateStoryPage = () => {
                         <p className="font-semibold">User Name</p>
                       </div>
                     </div>
+                   </Link>
                     <hr />
                     <div className="flex items-center bg-[#D6D9DD] rounded-xl gap-4 p-4 cursor-pointer">
                       <div>
