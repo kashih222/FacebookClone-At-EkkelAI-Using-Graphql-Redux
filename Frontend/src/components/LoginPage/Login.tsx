@@ -1,13 +1,17 @@
 import { useState } from "react";
 import Logo from "../../assets/4lCu2zih0ca.svg";
 import LoginSignUpFooter from "../Login&Signup Footer/LoginSignUpFooter";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { LOGIN_MUTATION } from "../../GraphqlOprations/mutations";
+import { useAppDispatch } from "../../Redux Toolkit/hooks";
+import { setUser, fetchMe } from "../../Redux Toolkit/slices/userSlice";
 
 const Login = () => {
   const [formData, setFormData] = useState({
     email: "",
     password: "",
   });
+  const dispatch = useAppDispatch();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -17,9 +21,33 @@ const Login = () => {
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const navigate = useNavigate();
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Login attempt:", formData);
+    try {
+      const res = await fetch(import.meta.env.VITE_GRAPHQL_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({
+          query: LOGIN_MUTATION,
+          variables: { email: formData.email, password: formData.password },
+        }),
+      });
+      const json = await res.json();
+      if (json.errors && json.errors.length) {
+        alert(json.errors[0].message || "Login failed");
+        return;
+      }
+      if (json.data?.login?.user) {
+        dispatch(setUser(json.data.login.user));
+      }
+      dispatch(fetchMe());
+      navigate("/");
+    } catch {
+      alert("Network error");
+    }
   };
 
   return (

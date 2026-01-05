@@ -15,7 +15,7 @@ import { Link } from "react-router-dom";
 
 const LeftSidebar = () => {
   return (
-    <div className="sticky top-0 h-[calc(100vh-90px)] ">
+    <div className="fixed top-18 h-[calc(100vh-90px)] w-74 ">
       {/* User Profile */}
       <div className="mb-6 h-[calc(100vh-150px)]  overflow-auto">
         <div className="flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-200 cursor-pointer">
@@ -95,7 +95,7 @@ const LeftSidebar = () => {
       </div>
 
       {/* Footer Links */}
-      <div className="mt-6 pt-4 border-t border-gray-300 absolute bottom-0">
+      <div className="  border-t border-gray-300 absolute bottom-0">
         <div className="flex flex-wrap gap-2 text-xs text-gray-500">
           <a href="#" className="hover:underline">
             Privacy

@@ -1,34 +1,89 @@
-import { BookImage, Globe, Smile, Video } from "lucide-react";
-import { useState } from "react";
+import { BookImage, Globe, Smile, Video, X } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { useAppDispatch, useAppSelector } from "../../Redux Toolkit/hooks";
+import { fetchMe } from "../../Redux Toolkit/slices/userSlice";
+import { storage, auth } from "../../firebase";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { CREATE_POST_MUTATION } from "../../GraphqlOprations/mutations";
 
 const CreatePost = () => {
   const [showModal, setShowModal] = useState(false);
   const [postText, setPostText] = useState("");
   const [open, setOpen] = useState(false);
   const [visibility, setVisibility] = useState("Public");
+  const dispatch = useAppDispatch();
+  const me = useAppSelector((s) => s.user.user);
+  const displayName = me ? `${me.firstName} ${me.surname}` : "User";
+  const initials = displayName
+    .split(" ")
+    .map((p) => p[0]?.toUpperCase() || "")
+    .join("")
+    .slice(0, 2);
 
   const options = ["Public", "Private", "Only me"];
+  const [files, setFiles] = useState<File[]>([]);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
-  const handlePostSubmit = () => {
-    if (postText.trim()) {
-      console.log("Post submitted:", postText);
-      setPostText("");
-      setShowModal(false);
+  const handlePostSubmit = async () => {
+    if (!postText.trim()) return;
+    let imageUrl: string | undefined;
+    let imageUrls: string[] = [];
+
+    if (files.length) {
+      try {
+        const urls: string[] = [];
+        const uid = auth.currentUser?.uid || "anonymous";
+        for (const f of files) {
+          const path = `posts/${uid}/${Date.now()}-${f.name}`;
+          const storageRef = ref(storage, path);
+          await uploadBytes(storageRef, f);
+          const url = await getDownloadURL(storageRef);
+          urls.push(url);
+        }
+        imageUrls = urls;
+        imageUrl = urls[0];
+      } catch (err: unknown) {
+        const message =
+          err instanceof Error ? err.message : "Image upload failed";
+        alert(message);
+        return;
+      }
     }
+    const res = await fetch(import.meta.env.VITE_GRAPHQL_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify({
+        query: CREATE_POST_MUTATION,
+        variables: { input: { content: postText, imageUrl, imageUrls } },
+      }),
+    });
+    const json = await res.json();
+    if (json.errors && json.errors.length) {
+      alert(json.errors[0].message || "Create post failed");
+      return;
+    }
+    setPostText("");
+    setFiles([]);
+    setShowModal(false);
   };
+
+  useEffect(() => {
+    dispatch(fetchMe());
+  }, [dispatch]);
 
   return (
     <>
       <div className="bg-white rounded-lg shadow-sm p-4 mb-4 flex items-center gap-2  w-full">
         <div className="flex items-center space-x-3 w-full">
           <div className="w-10 h-10 bg-linear-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center text-white font-bold">
-            U
+            {initials}
           </div>
           <button
             onClick={() => setShowModal(true)}
             className="flex-1 text-left w-full cursor-pointer bg-gray-100 hover:bg-gray-200 text-gray-500 rounded-full px-4 py-3 transition-colors"
           >
-            <span className="font-medium">What's on your mind, Unstop?</span>
+            <span className="font-medium">{"What's on your mind, " + (me?.firstName || "User") + "?"}</span>
           </button>
         </div>
 
@@ -80,10 +135,10 @@ const CreatePost = () => {
             <div className="p-4">
               <div className="flex items-center space-x-3 mb-4">
                 <div className="w-10 h-10 bg-linear-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center text-white font-bold">
-                  U
+                  {initials}
                 </div>
                 <div className="relative inline-block">
-                  <p className="font-semibold">Unstop Sale</p>
+                  <p className="font-semibold">{displayName}</p>
 
                   <button
                     onClick={() => setOpen(!open)}
@@ -118,10 +173,39 @@ const CreatePost = () => {
               <textarea
                 value={postText}
                 onChange={(e) => setPostText(e.target.value)}
-                placeholder="What's on your mind, Unstop?"
-                className="w-full h-48 p-3 text-lg border-0 focus:outline-none resize-none placeholder-gray-500"
+                placeholder={"What's on your mind, " + (me?.firstName || "User") + "?"}
+                className="w-full h-10 p-3 text-lg border-0 focus:outline-none resize-none placeholder-gray-500"
                 autoFocus
               />
+              <div className="mt-3">
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  multiple
+                  onChange={(e) => setFiles(Array.from(e.target.files || []))}
+                  className="block w-full text-sm text-gray-700"
+                />
+                {files.length > 0 && (
+                  <div className="mt-3 grid grid-cols-3 gap-2">
+                    {files.map((f, idx) => (
+                      <div key={idx} className="relative w-full aspect-square rounded-md overflow-hidden border border-gray-200 group">
+                        <img
+                          src={URL.createObjectURL(f)}
+                          alt={f.name}
+                          className="w-full h-full object-cover"
+                        />
+                        <button
+                          onClick={() => setFiles(files.filter((_, i) => i !== idx))}
+                          className="absolute top-1 right-1 bg-black/50 text-white rounded-full p-1 hover:bg-black/70 transition-colors"
+                        >
+                          <X className="w-4 h-4" />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
 
             <div className="p-4 border-t border-gray-300">
@@ -136,7 +220,7 @@ const CreatePost = () => {
               </span>
                   </button>
                   <button
-                    onClick={() => setShowModal(true)}
+                    onClick={() => fileInputRef.current?.click()}
                     className="flex items-center space-x-2 px-3 py-2 rounded-lg hover:bg-gray-100 transition-colors"
                   >
                   <span className={`text-xl text-green-500`}>

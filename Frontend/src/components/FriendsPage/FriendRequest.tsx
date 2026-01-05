@@ -1,8 +1,9 @@
-import { Camera, Columns3Cog, Gift, Settings, UserPlus, UserRoundCheck, Users, UsersRound, X, Check,} from "lucide-react";
+import {  UserPlus, X, Check,} from "lucide-react";
 import { useState } from "react";
 import Navbar from "../Navbar/Navbar";
+import FriendsPageSidebar from "./FriendsPageSidebar";
 
-const FriendsPage = () => {
+const FriendRequest = () => {
   const [friendRequests, setFriendRequests] = useState([
     {
       id: 1,
@@ -73,71 +74,13 @@ const FriendsPage = () => {
       {/* Header */}
       <Navbar />
       <div className="flex">
-        {/* Left Sidebar */}
-        <div className="w-90 h-screen bg-[#FFFFFF] flex-col shadow-lg sticky top-10  overflow-y-auto">
-          <div className="flex items-center justify-between px-3 py-2">
-            <div>
-              <p className="font-bold text-2xl">Friends</p>
-            </div>
-            <div className="w-10 h-10 rounded-full bg-gray-300 hover:bg-gray-200 cursor-pointer flex items-center justify-center">
-              <Settings />
-            </div>
-          </div>
-          <div className="flex items-center gap-2 px-3 py-2  border-b-gray-300 hover:bg-gray-200 cursor-pointer bg-blue-50">
-            <div className="w-12 h-10 bg-gray-300 rounded-full flex items-center justify-center text-blue-600 font-bold">
-              <Users />
-            </div>
-            <div className="w-full ">
-              <p className="font-medium text-lg ">Home</p>
-            </div>
-          </div>
-          <div className="flex items-center gap-2 px-3 py-2  border-b-gray-300 hover:bg-gray-200 cursor-pointer ">
-            <div className="w-12 h-10 bg-blue-100 rounded-full flex items-center justify-center text-black font-bold">
-              <UserPlus />
-            </div>
-            <div className="w-full ">
-              <p className="font-medium text-lg">Friend requests</p>
-            </div>
-          </div>
-          <div className="flex items-center gap-2 px-3 py-2  border-b-gray-300 hover:bg-gray-200 cursor-pointer">
-            <div className="w-12 h-10 bg-gray-300 rounded-full flex items-center justify-center text-black font-bold">
-              <UsersRound />
-            </div>
-            <div className="w-full ">
-              <p className="font-medium text-lg">Suggestions</p>
-            </div>
-          </div>
-          <div className="flex items-center gap-2 px-3 py-2  border-b-gray-300 hover:bg-gray-200 cursor-pointer">
-            <div className="w-12 h-10 bg-gray-300 rounded-full flex items-center justify-center text-black font-bold">
-              <UserRoundCheck />
-            </div>
-            <div className="w-full ">
-              <p className="font-medium text-lg">All friends</p>
-            </div>
-          </div>
-          <div className="flex items-center gap-2 px-3 py-2  border-b-gray-300 hover:bg-gray-200 cursor-pointer">
-            <div className="w-12 h-10 bg-gray-300 rounded-full flex items-center justify-center text-black font-bold">
-              <Gift />
-            </div>
-            <div className="w-full ">
-              <p className="font-medium text-lg">Birthday</p>
-            </div>
-          </div>
-          <div className="flex items-center gap-2 px-3 py-2  border-b-gray-300 hover:bg-gray-200 cursor-pointer">
-            <div className="w-12 h-10 bg-gray-300 rounded-full flex items-center justify-center text-black font-bold">
-              <Columns3Cog />
-            </div>
-            <div className="w-full ">
-              <p className="font-medium text-lg">Custom list</p>
-            </div>
-          </div>
-        </div>
+        <FriendsPageSidebar/>
 
         {/* Main Content */}
         <div className="flex-1 p-8">
           {/* Header */}
           <div className="flex items-center justify-between mb-6">
-            <h1 className="text-2xl font-bold">Friend requests</h1>
+            <h1 className="text-2xl font-bold">Friend Request</h1>
             <button 
               onClick={handleSeeAll}
               className="text-blue-600 hover:underline cursor-pointer font-medium"
@@ -162,9 +105,7 @@ const FriendsPage = () => {
                       </span>
                     </div>
                   </div>
-                  <div className="absolute bottom-2 right-2 bg-white rounded-full p-1 shadow-sm">
-                    <Camera className="w-5 h-5 text-gray-600" />
-                  </div>
+                 
                 </div>
 
                 {/* User Info */}
@@ -196,20 +137,20 @@ const FriendsPage = () => {
                   </p>
 
                   {/* Action Buttons */}
-                  <div className="flex gap-1">
+                  <div className="flex flex-col gap-1">
                     <button
                       onClick={() => handleAcceptRequest(request.id)}
                       className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-3 rounded-lg flex items-center justify-center space-x-2 transition-colors"
                     >
                       <Check className="w-4 h-5" />
-                      <span className="text-sm">Confirm</span>
+                      <span className="text-sm flex items-center justify-center">Add friend</span>
                     </button>
                     <button
                       onClick={() => handleDeleteRequest(request.id)}
                       className="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium py-2 px-3 rounded-lg flex items-center justify-center space-x-2 transition-colors"
                     >
                       <X className="w-4 h-5" />
-                      <span className="text-sm">Delete</span>
+                      <span className="text-sm">remove</span>
                     </button>
                   </div>
                 </div>
@@ -264,4 +205,4 @@ const FriendsPage = () => {
   );
 };
 
-export default FriendsPage;
+export default FriendRequest;

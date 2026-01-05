@@ -1,18 +1,32 @@
 import { Camera, LogOut, Logs, MessageCircleQuestionMark, MessageSquareDot, Moon, Settings, UserRoundPen, X, } from "lucide-react";
 import { FaBell, FaCaretDown, FaFacebook } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useAppDispatch, useAppSelector } from "../../Redux Toolkit/hooks";
+import { fetchMe, clearUser } from "../../Redux Toolkit/slices/userSlice";
+import { LOGOUT_MUTATION } from "../../GraphqlOprations/mutations";
 
 const CreateStoryPage = () => {
   const navigate = useNavigate();
   const [selectedOption, setSelectedOption] = useState<"photo" | "text" | null>(
     null
   );
+  const dispatch = useAppDispatch();
+  const me = useAppSelector((s) => s.user.user);
+  const displayName = me ? `${me.firstName} ${me.surname}` : "User";
+  const initials = displayName
+    .split(" ")
+    .map((p) => p[0]?.toUpperCase() || "")
+    .join("")
+    .slice(0, 2);
 
   const handleBack = () => {
     navigate(-1);
   };
 
+  useEffect(() => {
+    dispatch(fetchMe());
+  }, [dispatch]);
  
 
   return (
@@ -48,10 +62,10 @@ const CreateStoryPage = () => {
         </div>
         <div className="flex items-center gap-2 px-3 py-4 border-b border-b-gray-300">
           <div className="w-14 h-14 bg-linear-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center text-white font-bold">
-            K
+            {initials}
           </div>
           <div className="cursor-pointer">
-            <p className="font-medium text-xl">Kasinu Mənka</p>
+            <p className="font-medium text-xl">{displayName}</p>
             <p className="text-sm text-gray-500">Your story</p>
           </div>
         </div>
@@ -79,7 +93,7 @@ const CreateStoryPage = () => {
             <div className="relative group">
               <button className="flex items-center space-x-2 bg-gray-100 hover:bg-gray-200 rounded-full p-1 cursor-pointer">
                 <div className="w-10 h-10 bg-linear-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center text-white font-bold">
-                  U
+                  {initials}
                 </div>
                 <FaCaretDown className="hidden lg:inline text-gray-500" />
               </button>
@@ -91,10 +105,10 @@ const CreateStoryPage = () => {
                    <Link to={"/myprofile"}>
                      <div className="flex items-center gap-2.5 bg-[#F2F2F2]">
                       <div className="w-10 h-10 bg-linear-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center text-white font-bold">
-                        U
+                        {initials}
                       </div>
                       <div className="cursor-pointer">
-                        <p className="font-semibold">User Name</p>
+                        <p className="font-semibold">{displayName}</p>
                       </div>
                     </div>
                    </Link>
@@ -138,7 +152,25 @@ const CreateStoryPage = () => {
                     </div>
                   </button>
                   <button
-                    onClick={() => navigate("/login")}
+                    onClick={async () => {
+                      try {
+                        const res = await fetch(import.meta.env.VITE_GRAPHQL_URL, {
+                          method: "POST",
+                          headers: { "Content-Type": "application/json" },
+                          credentials: "include",
+                          body: JSON.stringify({ query: LOGOUT_MUTATION }),
+                        });
+                        const json = await res.json();
+                        if (json.errors && json.errors.length) {
+                          console.error(json.errors[0].message || "Logout failed");
+                        }
+                      } catch {
+                        console.error("Network error during logout");
+                      } finally {
+                        dispatch(clearUser());
+                        navigate("/login");
+                      }
+                    }}
                     className="w-full flex items-center px-4 py-2 hover:bg-red-500 hover:text-white text-left"
                   >
                     <LogOut className="mr-3" />

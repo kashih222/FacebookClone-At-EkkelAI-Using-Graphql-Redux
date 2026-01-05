@@ -30,14 +30,15 @@ const Post: React.FC<PostProps> = ({ post, onLike, onAddComment }) => {
     { id: 3, user: 'زبیدہ', text: 'واہ کیا بات ہے', time: '30m ago', likes: 12 }
   ]);
 
-   const [showReactions, setShowReactions] = useState(false);
-  const [reaction, setReaction] = useState<'like' | 'love' | 'haha' | 'wow' | 'sad' | 'angry' | null>(
+  const [showReactions, setShowReactions] = useState(false);
+  type ReactionType = 'like' | 'love' | 'haha' | 'wow' | 'sad' | 'angry';
+  const [reaction, setReaction] = useState<ReactionType | null>(
     post.liked ? 'like' : null
   );
 
     const reactionsRef = useRef<HTMLDivElement>(null);
 
-    const reactions = [
+    const reactions: Array<{ type: ReactionType; icon: string; label: string; color: string }> = [
     { type: 'like', icon: '👍', label: 'Like', color: 'text-blue-600', },
     { type: 'love', icon: '❤️', label: 'Love', color: 'text-red-600',},
     { type: 'haha', icon: '😄', label: 'Haha', color: 'text-yellow-600',},
@@ -45,7 +46,7 @@ const Post: React.FC<PostProps> = ({ post, onLike, onAddComment }) => {
     { type: 'sad', icon: '😢', label: 'Sad', color: 'text-blue-500',},
     { type: 'angry', icon: '😠', label: 'Angry', color: 'text-red-700',},
   ];
-    const handleReaction = (reactionType: 'like' | 'love' | 'haha' | 'wow' | 'sad' | 'angry') => {
+    const handleReaction = (reactionType: ReactionType) => {
     setReaction(reactionType);
     onLike(post.id);
     setShowReactions(false);
@@ -119,11 +120,7 @@ const Post: React.FC<PostProps> = ({ post, onLike, onAddComment }) => {
             <div>
               <div className="flex items-center space-x-2">
                 <h3 className="font-bold text-gray-900">{post.user.name}</h3>
-                {post.user.verified && (
-                  <span className="text-blue-500" title="Verified">
-                    ✓
-                  </span>
-                )}
+               
               </div>
               <div className="flex items-center space-x-2 text-sm text-gray-500">
                 <span>2h ago</span>
@@ -223,8 +220,8 @@ const Post: React.FC<PostProps> = ({ post, onLike, onAddComment }) => {
                 {reactions.map((react) => (
                   <button
                     key={react.type}
-                    onClick={() => handleReaction(react.type as any)}
-                    onMouseEnter={() => setReaction(react.type as any)}
+                    onClick={() => handleReaction(react.type)}
+                    onMouseEnter={() => setReaction(react.type)}
                     onMouseLeave={() => {
                       if (!post.liked) setReaction(null);
                       else setReaction('like');

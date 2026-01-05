@@ -14,6 +14,9 @@ import CreatePost from "../CreatePostPage/CreatePost";
 import PostFilter from "./PostFilter";
 import PersonalFeed from "./PersonalFeed";
 import { Link } from "react-router-dom";
+import { useEffect } from "react";
+import { useAppDispatch, useAppSelector } from "../../Redux Toolkit/hooks";
+import { fetchMe } from "../../Redux Toolkit/slices/userSlice";
 
 const ProfilePage = () => {
   // Sample user data
@@ -31,6 +34,20 @@ const ProfilePage = () => {
       relationship: "In a relationship",
     },
   };
+
+   const dispatch = useAppDispatch();
+    const me = useAppSelector((s) => s.user.user);
+    const displayName = me ? `${me.firstName} ${me.surname}` : userData.name;
+    const initials = displayName
+      .split(" ")
+      .map((p) => p[0]?.toUpperCase() || "")
+      .join("")
+      .slice(0, 2);
+
+   useEffect(() => {
+      dispatch(fetchMe());
+    }, [dispatch]);
+  
 
   return (
     <div className="w-full ">
@@ -54,7 +71,7 @@ const ProfilePage = () => {
                 <div className="absolute -bottom-16 left-8">
                   <div className="relative">
                     <div className="w-40 h-40 rounded-full border-4 border-white bg-linear-to-r from-cyan-500 to-blue-500 flex items-center justify-center text-white text-6xl font-bold">
-                      KM
+                      {initials}
                     </div>
                     <button className="absolute bottom-2 right-2 bg-blue-600 text-white p-2 rounded-full">
                       <Camera size={20} />
@@ -68,7 +85,7 @@ const ProfilePage = () => {
                 <div className="flex justify-between items-start">
                   <div>
                     <h1 className="text-3xl font-bold text-gray-900">
-                      {userData.name}
+                      {displayName}
                     </h1>
                     <p className="text-gray-600 mt-1">
                       {userData.followers} followers • {userData.following}{" "}
@@ -180,14 +197,14 @@ const ProfilePage = () => {
                   </div>
 
                   <div className="grid grid-cols-3 gap-2">
-                      <div className=" bg-gray-200 aspect-square bg-linear-to-br from-blue-${i}00 to-purple-${i}00 rounded-lg"></div>
-                      <div className=" bg-gray-200 aspect-square bg-linear-to-br from-blue-${i}00 to-purple-${i}00 rounded-lg"></div>
-                      <div className=" bg-gray-200 aspect-square bg-linear-to-br from-blue-${i}00 to-purple-${i}00 rounded-lg"></div>
-                      <div className=" bg-gray-200 aspect-square bg-linear-to-br from-blue-${i}00 to-purple-${i}00 rounded-lg"></div>
-                      <div className=" bg-gray-200 aspect-square bg-linear-to-br from-blue-${i}00 to-purple-${i}00 rounded-lg"></div>
-                      <div className=" bg-gray-200 aspect-square bg-linear-to-br from-blue-${i}00 to-purple-${i}00 rounded-lg"></div>
-                      <div className=" bg-gray-200 aspect-square bg-linear-to-br from-blue-${i}00 to-purple-${i}00 rounded-lg"></div>
-                      <div className=" bg-gray-200 aspect-square bg-linear-to-br from-blue-${i}00 to-purple-${i}00 rounded-lg"></div>
+                      <div className=" bg-gray-200 aspect-square bg-linear-to-br from-blue-500 to-purple-500 rounded-lg"></div>
+                      <div className=" bg-gray-200 aspect-square bg-linear-to-br from-blue-500 to-purple-500 rounded-lg"></div>
+                      <div className=" bg-gray-200 aspect-square bg-linear-to-br from-blue-500 to-purple-500 rounded-lg"></div>
+                      <div className=" bg-gray-200 aspect-square bg-linear-to-br from-blue-500 to-purple-500 rounded-lg"></div>
+                      <div className=" bg-gray-200 aspect-square bg-linear-to-br from-blue-500 to-purple-500 rounded-lg"></div>
+                      <div className=" bg-gray-200 aspect-square bg-linear-to-br from-blue-500 to-purple-500 rounded-lg"></div>
+                      <div className=" bg-gray-200 aspect-square bg-linear-to-br from-blue-500 to-purple-500 rounded-lg"></div>
+                      <div className=" bg-gray-200 aspect-square bg-linear-to-br from-blue-500 to-purple-500 rounded-lg"></div>
                   </div>
                 </div>
 

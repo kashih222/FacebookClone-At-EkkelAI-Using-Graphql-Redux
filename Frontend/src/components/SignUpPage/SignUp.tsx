@@ -2,7 +2,8 @@ import React, { useState } from "react";
 import Logo from "../../assets/4lCu2zih0ca.svg";
 import { IoInformationCircleOutline } from "react-icons/io5";
 import LoginSignUpFooter from "../Login&Signup Footer/LoginSignUpFooter";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { SIGNUP_MUTATION } from "../../GraphqlOprations/mutations";
 
 function SignUp() {
   const [formData, setFormData] = useState({
@@ -35,6 +36,8 @@ function SignUp() {
   const years = Array.from({ length: 120 }, (_, i) => currentYear - i);
   const days = Array.from({ length: 31 }, (_, i) => i + 1);
 
+  const navigate = useNavigate();
+
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
@@ -52,9 +55,34 @@ function SignUp() {
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Form submitted:", formData);
+    const input = {
+      firstName: formData.firstName,
+      surname: formData.surname,
+      email: formData.email,
+      password: formData.password,
+      day: Number(formData.day),
+      month: formData.month,
+      year: Number(formData.year),
+      gender: formData.gender,
+    };
+    try {
+      const res = await fetch(import.meta.env.VITE_GRAPHQL_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ query: SIGNUP_MUTATION, variables: { input } }),
+      });
+      const json = await res.json();
+      if (json.errors && json.errors.length) {
+        alert(json.errors[0].message || "Signup failed");
+        return;
+      }
+      navigate("/login");
+    } catch (err) {
+      console.log(err)
+      alert("Network error");
+    }
   };
 
   return (

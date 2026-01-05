@@ -2,7 +2,7 @@ import { EllipsisVertical, Plus, Search } from "lucide-react";
 import MetaLogo from "../../assets/Meta-AI-Logo-Mark-PNG.png";
 const RightSidebar = () => {
   return (
-    <div className="sticky overflow-auto  h-[calc(100vh-150px)] pr-4 top-20 right-0">
+    <div className="sticky overflow-auto  h-[calc(100vh-150px)] pr-4 top-20 right-0 w-74">
      <div className="">
        <div className="flex  justify-between items-center mb-2">
         <h3 className="font-bold text-gray-500">Contacts</h3>

@@ -1,74 +1,57 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Post from "../CreatePostPage/PostPage/Post";
-import CreatePost from "../CreatePostPage/CreatePost";
+import { GET_ALL_POSTS_QUERY } from "../../GraphqlOprations/queries";
 
 const Feed = () => {
-  const posts = [
-    {
-      id: 1,
-      user: {
-        name: "آفتاب احمد",
-        avatar: "آ",
-        time: "5 hours ago",
-        verified: true,
-      },
-      content: `# لکه کما نویس‌شمنت بی، کاروبار کردن سا کرون  
-جس بی مایات 3 لکه کما لون.  
-مشوره دی.`,
-      image: "https://images.unsplash.com/photo-1494790108755-2616b612b786",
-      likes: 1600,
-      comments: 2000,
-      shares: 21,
-      liked: false,
-    },
-    {
-      id: 2,
-      user: {
-        name: "سارہ خان",
-        avatar: "س",
-        time: "2 hours ago",
-        verified: true,
-      },
-      content: "آج کا دن بہت خاص تھا! نیا پروجیکٹ مکمل ہو گیا۔",
-      image: null,
-      likes: 850,
-      comments: 120,
-      shares: 45,
-      liked: true,
-    },
-    {
-      id: 3,
-      user: {
-        name: "علی رضا",
-        avatar: "ع",
-        time: "1 day ago",
-        verified: false,
-      },
-      content: "نئی ٹیکنالوجی کے بارے میں کیا خیال ہے؟",
-      image: "https://images.unsplash.com/photo-1516116216624-53e697fedbea",
-      likes: 3200,
-      comments: 580,
-      shares: 210,
-      liked: false,
-    },
-    {
-      id: 4,
-      user: {
-        name: "فاطمہ ظہیر",
-        avatar: "ف",
-        time: "3 days ago",
-        verified: true,
-      },
-      content: "پاکستان زندہ باد!",
-      image: null,
-      likes: 12500,
-      comments: 2400,
-      shares: 890,
-      liked: true,
-    },
-  ];
+  type GPost = {
+    id: string;
+    content: string;
+    imageUrl?: string | null;
+    imageUrls?: string[];
+    author: { id: string; firstName: string; surname: string; email: string };
+    createdAt: string;
+  };
+  type UIPost = {
+    id: number;
+    user: { name: string; avatar: string; time: string; verified: boolean };
+    content: string;
+    image: string | null;
+    likes: number;
+    comments: number;
+    shares: number;
+    liked: boolean;
+  };
+  const [allPosts, setAllPosts] = useState<UIPost[]>([]);
 
-  const [allPosts, setAllPosts] = useState(posts);
+  useEffect(() => {
+    const load = async () => {
+      const res = await fetch(import.meta.env.VITE_GRAPHQL_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ query: GET_ALL_POSTS_QUERY }),
+      });
+      const json = await res.json();
+      const list = (json.data?.posts || []) as GPost[];
+      const mapped: UIPost[] = list.map((p, idx) => ({
+        id: idx + 1,
+        user: {
+          name: `${p.author.firstName} ${p.author.surname}`,
+          avatar: `${p.author.firstName?.[0] || ""}`,
+          time: p.createdAt,
+          verified: true,
+        },
+        content: p.content,
+        image: p.imageUrl || (p.imageUrls?.[0] ?? null),
+        likes: 0,
+        comments: 0,
+        shares: 0,
+        liked: false,
+      }));
+      setAllPosts(mapped);
+    };
+    load();
+  }, []);
 
   const handleLike = (postId: number) => {
     setAllPosts((prevPosts) =>
@@ -90,7 +73,6 @@ const Feed = () => {
 
   return (
     <div className="space-y-6">
-      <CreatePost />
 
       {allPosts.map((post) => (
         <Post

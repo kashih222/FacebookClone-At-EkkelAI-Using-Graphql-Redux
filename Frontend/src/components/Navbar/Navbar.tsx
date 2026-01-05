@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
   FaFacebook,
@@ -21,12 +21,19 @@ import {
   Settings,
   UserRoundPen,
 } from "lucide-react";
+import { useAppDispatch, useAppSelector } from "../../Redux Toolkit/hooks";
+import { fetchMe, clearUser } from "../../Redux Toolkit/slices/userSlice";
+import { LOGOUT_MUTATION } from "../../GraphqlOprations/mutations";
 
 const Navbar = () => {
   const [searchQuery, setSearchQuery] = useState("");
+  const dispatch = useAppDispatch();
+  const me = useAppSelector((s) => s.user.user);
   const navigate = useNavigate();
 
-
+  useEffect(() => {
+    dispatch(fetchMe());
+  }, []);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -63,7 +70,7 @@ const Navbar = () => {
           </div>
 
           {/* Center Section: Navigation Icons */}
-          <div className="hidden lg:flex items-center justify-center flex-1 space-x-1">
+          <div className="hidden lg:flex items-center justify-center flex-1 space-x-14">
            <Link to={"/"}>
             <button
               className={`flex items-center justify-center w-20 h-14 rounded-md hover:bg-gray-100 cursor-pointer`}
@@ -118,7 +125,7 @@ const Navbar = () => {
             <div className="relative group">
               <button className="flex items-center space-x-2 bg-gray-100 hover:bg-gray-200 rounded-full p-1 cursor-pointer">
                 <div className="w-8 h-8 bg-linear-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center text-white font-bold">
-                  U
+                  {(me?.firstName?.[0] || "U").toUpperCase()}
                 </div>
 
                 <FaCaretDown className="hidden lg:inline text-gray-500" />
@@ -131,10 +138,10 @@ const Navbar = () => {
                    <Link to={"/myprofile"}>
                     <div className="flex items-center gap-2.5 bg-[#F2F2F2]">
                       <div className="w-10 h-10 bg-linear-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center text-white font-bold">
-                        U
+                        {(me?.firstName?.[0] || "U").toUpperCase()}
                       </div>
                       <div className="cursor-pointer">
-                        <p className="font-semibold">User Name</p>
+                        <p className="font-semibold">{me ? `${me.firstName} ${me.surname}` : "User Name"}</p>
                       </div>
                     </div>
                    </Link>
@@ -178,7 +185,25 @@ const Navbar = () => {
                     </div>
                   </button>
                   <button
-                    onClick={() => navigate("/login")}
+                    onClick={async () => {
+                      try {
+                        const res = await fetch(import.meta.env.VITE_GRAPHQL_URL, {
+                          method: "POST",
+                          headers: { "Content-Type": "application/json" },
+                          credentials: "include",
+                          body: JSON.stringify({ query: LOGOUT_MUTATION }),
+                        });
+                        const json = await res.json();
+                        if (json.errors && json.errors.length) {
+                          console.error(json.errors[0].message || "Logout failed");
+                        }
+                      } catch {
+                        console.error("Network error during logout");
+                      } finally {
+                        dispatch(clearUser());
+                        navigate("/login");
+                      }
+                    }}
                     className="w-full flex items-center px-4 py-2 hover:bg-red-500 hover:text-white text-lef"
                   >
                     <LogOut className="mr-3" />

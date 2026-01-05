@@ -7,7 +7,7 @@ import Stories from "../StoriesPage/Stories";
 
 const HomePage = () => {
   return (
-    <div className="min-h-screen bg-gray-100 mt-14">
+    <div className="min-h-screen bg-gray-100 lg:mt-14 sm:mt-30">
       <Navbar />
       
       <div className=" mx-auto px-4 pt-4">
