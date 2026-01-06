@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import {  ThumbsUp,  MessageCircle,  Share2,  MoreHorizontal, Send, Smile, Image as ImageIcon, User, Globe} from 'lucide-react';
+import { ThumbsUp, MessageCircle, Share2, MoreHorizontal, Send, Smile, Image as ImageIcon, User, Globe } from 'lucide-react';
 import { FaHeart, FaThumbsUp } from 'react-icons/fa';
 
 interface PostProps {
@@ -8,7 +8,7 @@ interface PostProps {
     user: {
       name: string;
       avatar: string;
-      time: string;
+      time: string; // This should be the formatted time from PersonalFeed
       verified: boolean;
     };
     content: string;
@@ -26,28 +26,72 @@ const Post: React.FC<PostProps> = ({ post, onLike, onAddComment }) => {
   const [showComments, setShowComments] = useState(false);
   const [commentText, setCommentText] = useState('');
   const [comments, setComments] = useState(post.comments || []);
-
   const [showReactions, setShowReactions] = useState(false);
   type ReactionType = 'like' | 'love' | 'haha' | 'wow' | 'sad' | 'angry';
   const [reaction, setReaction] = useState<ReactionType | null>(null);
+  const reactionsRef = useRef<HTMLDivElement>(null);
 
-    const reactionsRef = useRef<HTMLDivElement>(null);
-
-    const reactions: Array<{ type: ReactionType; icon: string; label: string; color: string }> = [
-    { type: 'like', icon: '👍', label: 'Like', color: 'text-blue-600', },
-    { type: 'love', icon: '❤️', label: 'Love', color: 'text-red-600',},
-    { type: 'haha', icon: '😄', label: 'Haha', color: 'text-yellow-600',},
-    { type: 'wow', icon: '😯', label: 'Wow', color: 'text-yellow-500', },
-    { type: 'sad', icon: '😢', label: 'Sad', color: 'text-blue-500',},
-    { type: 'angry', icon: '😠', label: 'Angry', color: 'text-red-700',},
+  const reactions: Array<{ type: ReactionType; icon: string; label: string; color: string }> = [
+    { type: 'like', icon: '👍', label: 'Like', color: 'text-blue-600' },
+    { type: 'love', icon: '❤️', label: 'Love', color: 'text-red-600' },
+    { type: 'haha', icon: '😄', label: 'Haha', color: 'text-yellow-600' },
+    { type: 'wow', icon: '😯', label: 'Wow', color: 'text-yellow-500' },
+    { type: 'sad', icon: '😢', label: 'Sad', color: 'text-blue-500' },
+    { type: 'angry', icon: '😠', label: 'Angry', color: 'text-red-700' },
   ];
-    const handleReaction = (reactionType: ReactionType) => {
+
+  // FIXED: formatRelativeTime function
+  const formatRelativeTime = (timeString: string): string => {
+    // If timeString is already formatted (like "44m ago"), return it as is
+    if (timeString.includes('ago') || timeString.includes('Just now') || timeString === 'Recently') {
+      return timeString;
+    }
+    
+    try {
+      // Try to parse as ISO date
+      const date = new Date(timeString);
+      
+      if (isNaN(date.getTime())) {
+        console.warn('Invalid date in Post component:', timeString);
+        return 'Recently';
+      }
+      
+      const now = new Date();
+      const diffInMs = now.getTime() - date.getTime();
+      
+      if (diffInMs < 0) return 'Just now';
+      
+      const diffInSeconds = Math.floor(diffInMs / 1000);
+      const diffInMinutes = Math.floor(diffInSeconds / 60);
+      const diffInHours = Math.floor(diffInMinutes / 60);
+      const diffInDays = Math.floor(diffInHours / 24);
+      
+      if (diffInSeconds < 60) return 'Just now';
+      if (diffInMinutes < 60) return `${diffInMinutes}m ago`;
+      if (diffInHours < 24) return `${diffInHours}h ago`;
+      if (diffInDays < 7) return `${diffInDays}d ago`;
+      
+      const diffInWeeks = Math.floor(diffInDays / 7);
+      if (diffInWeeks < 4) return `${diffInWeeks}w ago`;
+      
+      const diffInMonths = Math.floor(diffInDays / 30);
+      if (diffInMonths < 12) return `${diffInMonths}mo ago`;
+      
+      const diffInYears = Math.floor(diffInDays / 365);
+      return `${diffInYears}y ago`;
+    } catch (error) {
+      console.error('Error formatting time in Post:', error);
+      return 'Recently';
+    }
+  };
+
+  const handleReaction = (reactionType: ReactionType) => {
     setReaction(reactionType);
     onLike(post.id);
     setShowReactions(false);
   };
 
-    const handleLikeButtonClick = () => {
+  const handleLikeButtonClick = () => {
     if (reaction === 'like') {
       setReaction(null);
       onLike(post.id);
@@ -60,7 +104,8 @@ const Post: React.FC<PostProps> = ({ post, onLike, onAddComment }) => {
   const handleMouseEnter = () => {
     setShowReactions(true);
   };
-   const handleMouseLeave = () => {
+
+  const handleMouseLeave = () => {
     setTimeout(() => {
       if (reactionsRef.current && !reactionsRef.current.matches(':hover')) {
         setShowReactions(false);
@@ -68,7 +113,7 @@ const Post: React.FC<PostProps> = ({ post, onLike, onAddComment }) => {
     }, 300);
   };
 
-   useEffect(() => {
+  useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (reactionsRef.current && !reactionsRef.current.contains(event.target as Node)) {
         setShowReactions(false);
@@ -79,11 +124,15 @@ const Post: React.FC<PostProps> = ({ post, onLike, onAddComment }) => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-
   const handleSubmitComment = (e: React.FormEvent) => {
     e.preventDefault();
     if (commentText.trim()) {
-      const newComment = { id: Math.random().toString(), authorName: 'You', text: commentText, createdAt: new Date().toISOString() };
+      const newComment = {
+        id: Math.random().toString(),
+        authorName: 'You',
+        text: commentText,
+        createdAt: new Date().toISOString()
+      };
       setComments([newComment, ...comments]);
       onAddComment(post.id, commentText);
       setCommentText('');
@@ -97,23 +146,12 @@ const Post: React.FC<PostProps> = ({ post, onLike, onAddComment }) => {
     return num.toString();
   };
 
-  const formatRelativeTime = (iso: string) => {
-    const d = new Date(iso);
-    const now = new Date();
-    const diff = Math.floor((now.getTime() - d.getTime()) / 1000);
-    if (diff < 60) return `${diff}s ago`;
-    const m = Math.floor(diff / 60);
-    if (m < 60) return `${m}m ago`;
-    const h = Math.floor(m / 60);
-    if (h < 24) return `${h}h ago`;
-    const days = Math.floor(h / 24);
-    if (days < 7) return `${days}d ago`;
-    const weeks = Math.floor(days / 7);
-    if (weeks < 4) return `${weeks}w ago`;
-    const months = Math.floor(days / 30);
-    if (months < 12) return `${months}mo ago`;
-    const years = Math.floor(days / 365);
-    return `${years}y ago`;
+  const formatCommentTime = (timeString: string): string => {
+    if (timeString.includes('ago') || timeString.includes('Just now') || timeString === 'Recently') {
+      return timeString;
+    }
+    
+    return formatRelativeTime(timeString);
   };
 
   return (
@@ -128,11 +166,10 @@ const Post: React.FC<PostProps> = ({ post, onLike, onAddComment }) => {
             <div>
               <div className="flex items-center space-x-2">
                 <h3 className="font-bold text-gray-900">{post.user.name}</h3>
-               
               </div>
               <div className="flex items-center space-x-2 text-sm text-gray-500">
-                <span>{formatRelativeTime(post.user.time)}</span>
-                <span ><Globe className='w-4 h-4'/></span>
+                <span>{post.user.time}</span>
+                <span><Globe className='w-4 h-4'/></span>
               </div>
             </div>
           </div>
@@ -171,7 +208,6 @@ const Post: React.FC<PostProps> = ({ post, onLike, onAddComment }) => {
                   </div>
                   <div className="w-5 h-5 bg-red-500 rounded-full flex items-center justify-center text-white text-xs">
                     <FaHeart />
-
                   </div>
                 </div>
                 <span className="ml-2 text-sm">{formatNumber(post.likes)}</span>
@@ -191,7 +227,7 @@ const Post: React.FC<PostProps> = ({ post, onLike, onAddComment }) => {
       </div>
 
       {/* Post Actions with Reactions */}
-      <div className=" border-gray-200 px-4">
+      <div className="border-gray-200 px-4">
         <div className="flex items-center relative">
           {/* Like Button with Reactions */}
           <div 
@@ -235,7 +271,6 @@ const Post: React.FC<PostProps> = ({ post, onLike, onAddComment }) => {
                       if (!post.liked) setReaction(null);
                       else setReaction('like');
                     }}
-                   
                     title={react.label}
                   >
                     {react.icon}
@@ -305,7 +340,7 @@ const Post: React.FC<PostProps> = ({ post, onLike, onAddComment }) => {
                   <div className="bg-white rounded-2xl px-4 py-2">
                     <div className="flex items-center justify-between">
                       <h4 className="font-semibold text-sm">{comment.authorName}</h4>
-                      <span className="text-xs text-gray-500">{formatRelativeTime(comment.createdAt)}</span>
+                      <span className="text-xs text-gray-500">{formatCommentTime(comment.createdAt)}</span>
                     </div>
                     <p className="text-gray-800 mt-1">{comment.text}</p>
                     <div className="flex items-center space-x-4 mt-2 text-xs text-gray-500">
@@ -330,17 +365,3 @@ const Post: React.FC<PostProps> = ({ post, onLike, onAddComment }) => {
 };
 
 export default Post;
-
-
-
-
-
-
-
-
-
-
-
-
-
-

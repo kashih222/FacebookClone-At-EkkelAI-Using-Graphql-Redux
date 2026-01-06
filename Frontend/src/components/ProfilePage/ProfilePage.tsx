@@ -270,14 +270,16 @@ const ProfilePage = () => {
                   </div>
 
                   <div className="grid grid-cols-3 gap-2">
-                    <div className="bg-gray-200 aspect-square bg-linear-to-br from-blue-500 to-purple-500 rounded-lg"></div>
-                    <div className="bg-gray-200 aspect-square bg-linear-to-br from-blue-500 to-purple-500 rounded-lg"></div>
-                    <div className="bg-gray-200 aspect-square bg-linear-to-br from-blue-500 to-purple-500 rounded-lg"></div>
-                    <div className="bg-gray-200 aspect-square bg-linear-to-br from-blue-500 to-purple-500 rounded-lg"></div>
-                    <div className="bg-gray-200 aspect-square bg-linear-to-br from-blue-500 to-purple-500 rounded-lg"></div>
-                    <div className="bg-gray-200 aspect-square bg-linear-to-br from-blue-500 to-purple-500 rounded-lg"></div>
-                    <div className="bg-gray-200 aspect-square bg-linear-to-br from-blue-500 to-purple-500 rounded-lg"></div>
-                    <div className="bg-gray-200 aspect-square bg-linear-to-br from-blue-500 to-purple-500 rounded-lg"></div>
+                    <div className="bg-gray-200 w-20 h-22"></div>
+                    <div className="bg-gray-200 w-20 h-22"></div>
+                    <div className="bg-gray-200 w-20 h-22"></div>
+                    <div className="bg-gray-200 w-20 h-22"></div>
+                    <div className="bg-gray-200 w-20 h-22"></div>
+                    <div className="bg-gray-200 w-20 h-22"></div>
+                    <div className="bg-gray-200 w-20 h-22"></div>
+                    <div className="bg-gray-200 w-20 h-22"></div>
+                    <div className="bg-gray-200 w-20 h-22"></div>
+                    
                   </div>
                 </div>
 

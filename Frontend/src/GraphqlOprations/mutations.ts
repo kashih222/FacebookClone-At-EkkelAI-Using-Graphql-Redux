@@ -47,35 +47,37 @@ export const CREATE_POST_MUTATION = `
   }
 `;
 
-export const ADD_FRIEND_MUTATION = `
-  mutation AddFriend($userId: ID!) {
-    addFriend(userId: $userId)
-  }
-`;
-
-export const SEND_FRIEND_REQUEST_MUTATION = `
-  mutation SendFriendRequest($userId: ID!) {
-    sendFriendRequest(userId: $userId)
-  }
-`;
-
-export const ACCEPT_FRIEND_REQUEST_MUTATION = `
-  mutation AcceptFriendRequest($requestId: ID!) {
-    acceptFriendRequest(requestId: $requestId)
-  }
-`;
-
-export const REJECT_FRIEND_REQUEST_MUTATION = `
-  mutation RejectFriendRequest($requestId: ID!) {
-    rejectFriendRequest(requestId: $requestId)
-  }
-`;
-
 export const GET_UPLOAD_TARGETS_MUTATION = `
   mutation GetUploadTargets($requests: [UploadRequest!]!) {
     getUploadTargets(requests: $requests) {
       uploadUrl
       publicUrl
+    }
+  }
+`;
+
+
+export const REACT_POST_MUTATION = `
+  mutation ReactPost($input: ReactPostInput!) {
+    reactPost(input: $input) {
+      id
+      content
+      imageUrl
+      imageUrls
+      author { id firstName surname email }
+      createdAt
+      comments {
+        id
+        content
+        createdAt
+        author { id firstName surname email }
+      }
+      reactions {
+        type
+        createdAt
+        user { id }
+      }
+      reactionSummary { like love haha wow sad angry }
     }
   }
 `;
@@ -105,27 +107,30 @@ export const ADD_COMMENT_MUTATION = `
   }
 `;
 
-export const REACT_POST_MUTATION = `
-  mutation ReactPost($input: ReactPostInput!) {
-    reactPost(input: $input) {
-      id
-      content
-      imageUrl
-      imageUrls
-      author { id firstName surname email }
-      createdAt
-      comments {
-        id
-        content
-        createdAt
-        author { id firstName surname email }
-      }
-      reactions {
-        type
-        createdAt
-        user { id }
-      }
-      reactionSummary { like love haha wow sad angry }
-    }
+export const ADD_FRIEND_MUTATION = `
+  mutation AddFriend($userId: ID!) {
+    addFriend(userId: $userId)
   }
 `;
+
+export const SEND_FRIEND_REQUEST_MUTATION = `
+  mutation SendFriendRequest($userId: ID!) {
+    sendFriendRequest(userId: $userId)
+  }
+`;
+
+export const ACCEPT_FRIEND_REQUEST_MUTATION = `
+  mutation AcceptFriendRequest($requestId: ID!) {
+    acceptFriendRequest(requestId: $requestId)
+  }
+`;
+
+export const REJECT_FRIEND_REQUEST_MUTATION = `
+  mutation RejectFriendRequest($requestId: ID!) {
+    rejectFriendRequest(requestId: $requestId)
+  }
+`;
+
+
+
+

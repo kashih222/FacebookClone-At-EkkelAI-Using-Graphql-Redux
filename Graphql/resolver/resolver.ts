@@ -588,7 +588,7 @@ export const resolvers = {
       return results;
     },
 
-    // Add friend (legacy - directly adds without request)
+    // Add friend 
     addFriend: async (_: unknown, args: { userId: string }, ctx: any) => {
       const token = ctx.req?.cookies?.token;
       if (!token) {

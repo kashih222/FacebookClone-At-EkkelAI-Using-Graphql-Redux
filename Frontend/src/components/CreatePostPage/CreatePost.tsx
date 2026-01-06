@@ -2,7 +2,10 @@ import { BookImage, Globe, Smile, Video, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../Redux Toolkit/hooks";
 import { fetchMe } from "../../Redux Toolkit/slices/userSlice";
-import { CREATE_POST_MUTATION, GET_UPLOAD_TARGETS_MUTATION } from "../../GraphqlOprations/mutations";
+import {
+  CREATE_POST_MUTATION,
+  GET_UPLOAD_TARGETS_MUTATION,
+} from "../../GraphqlOprations/mutations";
 
 interface CreatePostProps {
   onPostCreated?: () => void;
@@ -37,6 +40,7 @@ const CreatePost = ({ onPostCreated }: CreatePostProps) => {
           filename: f.name,
           contentType: f.type || "application/octet-stream",
         }));
+
         const presignRes = await fetch(import.meta.env.VITE_GRAPHQL_URL, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -46,62 +50,108 @@ const CreatePost = ({ onPostCreated }: CreatePostProps) => {
             variables: { requests },
           }),
         });
+
         const presignJson = await presignRes.json();
+
         if (presignJson.errors && presignJson.errors.length) {
-          throw new Error(presignJson.errors[0].message || "Presign failed");
+          throw new Error(
+            presignJson.errors[0].message || "Failed to get upload URLs"
+          );
         }
-        const targets: { uploadUrl: string; publicUrl: string }[] =
-          presignJson.data?.getUploadTargets || [];
+
+        const targets: {
+          uploadUrl: string;
+          publicUrl: string;
+          fields?: Record<string, string>;
+        }[] = presignJson.data?.getUploadTargets || [];
+
         if (targets.length !== files.length) {
           throw new Error("Upload targets mismatch");
         }
+
         for (let i = 0; i < files.length; i++) {
-          const f = files[i];
-          const t = targets[i];
-          const putRes = await fetch(t.uploadUrl, {
-            method: "PUT",
-            headers: { 
-              "Content-Type": f.type || "application/octet-stream",
-              "x-amz-acl": "public-read",
-            },
-            body: f,
-          });
-          if (!putRes.ok) {
-            throw new Error(`Upload failed: ${putRes.statusText}`);
+          const file = files[i];
+          const target = targets[i];
+
+          if (target.fields) {
+            const formData = new FormData();
+
+            Object.entries(target.fields).forEach(([key, value]) => {
+              formData.append(key, value);
+            });
+
+            formData.append("file", file);
+
+            const uploadRes = await fetch(target.uploadUrl, {
+              method: "POST",
+              body: formData,
+            });
+
+            if (!uploadRes.ok) {
+              throw new Error(`Upload failed: ${uploadRes.statusText}`);
+            }
+          } else {
+            const uploadRes = await fetch(target.uploadUrl, {
+              method: "PUT",
+              headers: {
+                "Content-Type": file.type || "application/octet-stream",
+              },
+              body: file,
+            });
+
+            if (!uploadRes.ok) {
+              throw new Error(`Upload failed: ${uploadRes.statusText}`);
+            }
           }
         }
+
         imageUrls = targets.map((t) => t.publicUrl);
         imageUrl = imageUrls[0];
       } catch (err: unknown) {
         const message =
           err instanceof Error ? err.message : "Image upload failed";
         alert(message);
+        console.error("Upload error:", err);
         return;
       }
     }
-    const res = await fetch(import.meta.env.VITE_GRAPHQL_URL, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      credentials: "include",
-      body: JSON.stringify({
-        query: CREATE_POST_MUTATION,
-        variables: { input: { content: postText, imageUrl, imageUrls } },
-      }),
-    });
-    const json = await res.json();
-    if (json.errors && json.errors.length) {
-      alert(json.errors[0].message || "Create post failed");
-      return;
-    }
-    setPostText("");
-    setFiles([]);
-    setShowModal(false);
-    // Trigger feed refresh
-    if (onPostCreated) {
-      onPostCreated();
+
+    try {
+      const res = await fetch(import.meta.env.VITE_GRAPHQL_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({
+          query: CREATE_POST_MUTATION,
+          variables: {
+            input: {
+              content: postText,
+              imageUrl,
+              imageUrls: imageUrls.length > 0 ? imageUrls : null,
+            },
+          },
+        }),
+      });
+
+      const json = await res.json();
+
+      if (json.errors && json.errors.length) {
+        alert(json.errors[0].message || "Create post failed");
+        return;
+      }
+
+      setPostText("");
+      setFiles([]);
+      setShowModal(false);
+
+      if (onPostCreated) {
+        onPostCreated();
+      }
+    } catch (error) {
+      alert("Failed to create post");
+      console.error("Post creation error:", error);
     }
   };
-
   useEffect(() => {
     dispatch(fetchMe());
   }, [dispatch]);
@@ -117,7 +167,9 @@ const CreatePost = ({ onPostCreated }: CreatePostProps) => {
             onClick={() => setShowModal(true)}
             className="flex-1 text-left w-full cursor-pointer bg-gray-100 hover:bg-gray-200 text-gray-500 rounded-full px-4 py-3 transition-colors"
           >
-            <span className="font-medium">{"What's on your mind, " + (me?.firstName || "User") + "?"}</span>
+            <span className="font-medium">
+              {"What's on your mind, " + (me?.firstName || "User") + "?"}
+            </span>
           </button>
         </div>
 
@@ -178,7 +230,9 @@ const CreatePost = ({ onPostCreated }: CreatePostProps) => {
                     onClick={() => setOpen(!open)}
                     className="flex items-center cursor-pointer space-x-1 bg-gray-100 hover:bg-gray-200 px-3 py-1 rounded-full text-sm mt-1"
                   >
-                    <span className="text-gray-600"><Globe className="w-4 h-4"/></span>
+                    <span className="text-gray-600">
+                      <Globe className="w-4 h-4" />
+                    </span>
                     <span className="font-medium text-gray-700">
                       {visibility}
                     </span>
@@ -207,7 +261,9 @@ const CreatePost = ({ onPostCreated }: CreatePostProps) => {
               <textarea
                 value={postText}
                 onChange={(e) => setPostText(e.target.value)}
-                placeholder={"What's on your mind, " + (me?.firstName || "User") + "?"}
+                placeholder={
+                  "What's on your mind, " + (me?.firstName || "User") + "?"
+                }
                 className="w-full h-10 p-3 text-lg border-0 focus:outline-none resize-none placeholder-gray-500"
                 autoFocus
               />
@@ -223,14 +279,19 @@ const CreatePost = ({ onPostCreated }: CreatePostProps) => {
                 {files.length > 0 && (
                   <div className="mt-3 grid grid-cols-3 gap-2">
                     {files.map((f, idx) => (
-                      <div key={idx} className="relative w-full aspect-square rounded-md overflow-hidden border border-gray-200 group">
+                      <div
+                        key={idx}
+                        className="relative w-full aspect-square rounded-md overflow-hidden border border-gray-200 group"
+                      >
                         <img
                           src={URL.createObjectURL(f)}
                           alt={f.name}
                           className="w-full h-full object-cover"
                         />
                         <button
-                          onClick={() => setFiles(files.filter((_, i) => i !== idx))}
+                          onClick={() =>
+                            setFiles(files.filter((_, i) => i !== idx))
+                          }
                           className="absolute top-1 right-1 bg-black/50 text-white rounded-full p-1 hover:bg-black/70 transition-colors"
                         >
                           <X className="w-4 h-4" />
@@ -250,24 +311,24 @@ const CreatePost = ({ onPostCreated }: CreatePostProps) => {
                     className="flex items-center space-x-2 px-3 py-2 rounded-lg hover:bg-gray-100 transition-colors"
                   >
                     <span className={` text-red-500`}>
-                <Video className="w-10 h-10" />
-              </span>
+                      <Video className="w-10 h-10" />
+                    </span>
                   </button>
                   <button
                     onClick={() => fileInputRef.current?.click()}
                     className="flex items-center space-x-2 px-3 py-2 rounded-lg hover:bg-gray-100 transition-colors"
                   >
-                  <span className={`text-xl text-green-500`}>
-                <BookImage className="w-8 h-8" />
-              </span>
+                    <span className={`text-xl text-green-500`}>
+                      <BookImage className="w-8 h-8" />
+                    </span>
                   </button>
                   <button
                     onClick={() => setShowModal(true)}
                     className="flex items-center space-x-2 px-3 py-2 rounded-lg hover:bg-gray-100 transition-colors"
                   >
-                   <span className={`text-xl text-yellow-500`}>
-                <Smile className="w-8 h-8" />
-              </span>
+                    <span className={`text-xl text-yellow-500`}>
+                      <Smile className="w-8 h-8" />
+                    </span>
                   </button>
                 </div>
                 <div className="flex space-x-2">
