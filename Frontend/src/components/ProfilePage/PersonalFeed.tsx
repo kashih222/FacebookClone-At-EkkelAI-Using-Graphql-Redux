@@ -1,9 +1,12 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useImperativeHandle, forwardRef, useCallback } from "react";
 import Post from "../CreatePostPage/PostPage/Post";
 import { GET_MY_POSTS_QUERY } from "../../GraphqlOprations/queries";
-import CreatePost from "../CreatePostPage/CreatePost";
+import { REACT_POST_MUTATION, ADD_COMMENT_MUTATION } from "../../GraphqlOprations/mutations";
+ 
 
-const PersonalFeed = () => {
+type PersonalFeedProps = Record<string, never>;
+
+const PersonalFeed = forwardRef<{ refresh: () => void }, PersonalFeedProps>((_, ref) => {
   type GPost = {
     id: string;
     content: string;
@@ -11,70 +14,102 @@ const PersonalFeed = () => {
     imageUrls?: string[];
     author: { id: string; firstName: string; surname: string; email: string };
     createdAt: string;
+    comments: { id: string; content: string; createdAt: string; author: { id: string; firstName: string; surname: string; email: string } }[];
+    reactions: { type: string; createdAt: string; user: { id: string } }[];
   };
   type UIPost = {
-    id: number;
+    id: string;
     user: { name: string; avatar: string; time: string; verified: boolean };
     content: string;
     image: string | null;
     likes: number;
-    comments: number;
+    comments: { id: string; authorName: string; text: string; createdAt: string }[];
     shares: number;
     liked: boolean;
   };
   const [allPosts, setAllPosts] = useState<UIPost[]>([]);
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
 
-  useEffect(() => {
-    const load = async () => {
-      const res = await fetch(import.meta.env.VITE_GRAPHQL_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify({ query: GET_MY_POSTS_QUERY }),
-      });
-      const json = await res.json();
-      const list = (json.data?.myPosts || []) as GPost[];
-      const mapped: UIPost[] = list.map((p, idx) => ({
-        id: idx + 1,
-        user: {
-          name: `${p.author.firstName} ${p.author.surname}`,
-          avatar: `${p.author.firstName?.[0] || ""}`,
-          time: p.createdAt,
-          verified: true,
-        },
-        content: p.content,
-        image: p.imageUrl || (p.imageUrls?.[0] ?? null),
-        likes: 0,
-        comments: 0,
-        shares: 0,
-        liked: false,
-      }));
-      setAllPosts(mapped);
-    };
-    load();
+  const loadPosts = useCallback(async () => {
+    const res = await fetch(import.meta.env.VITE_GRAPHQL_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify({ query: GET_MY_POSTS_QUERY }),
+    });
+    const json = await res.json();
+    const list = (json.data?.myPosts || []) as GPost[];
+    const mapped: UIPost[] = list.map((p) => ({
+      id: p.id,
+      user: {
+        name: `${p.author.firstName} ${p.author.surname}`,
+        avatar: `${p.author.firstName?.[0] || ""}`,
+        time: p.createdAt,
+        verified: true,
+      },
+      content: p.content,
+      image: p.imageUrl || (p.imageUrls?.[0] ?? null),
+      likes: p.reactions?.length ?? 0,
+      comments: (p.comments || []).map(c => ({
+        id: c.id,
+        authorName: `${c.author.firstName} ${c.author.surname}`,
+        text: c.content,
+        createdAt: c.createdAt
+      })),
+      shares: 0,
+      liked: false,
+    }));
+    setAllPosts(mapped);
   }, []);
 
-  const handleLike = (postId: number) => {
-    setAllPosts((prevPosts) =>
-      prevPosts.map((post) =>
-        post.id === postId
-          ? {
-              ...post,
-              liked: !post.liked,
-              likes: post.liked ? post.likes - 1 : post.likes + 1,
-            }
-          : post
-      )
-    );
+  useEffect(() => {
+    const t = setTimeout(() => {
+      void loadPosts();
+    }, 0);
+    return () => clearTimeout(t);
+  }, [refreshTrigger, loadPosts]);
+
+  
+
+  // Expose refresh function via ref
+  useImperativeHandle(ref, () => ({
+    refresh: () => setRefreshTrigger(prev => prev + 1)
+  }));
+
+  const handleLike = async (postId: string) => {
+    const uiPost = allPosts.find(p => p.id === postId);
+    if (!uiPost) return;
+    const res = await fetch(import.meta.env.VITE_GRAPHQL_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify({
+        query: REACT_POST_MUTATION,
+        variables: { input: { postId: uiPost.id, type: "like" } }
+      }),
+    });
+    await res.json();
+    setRefreshTrigger(prev => prev + 1);
   };
 
-  const handleAddComment = (postId: number, commentText: string) => {
-    console.log(`Added comment to post ${postId}: ${commentText}`);
+  const handleAddComment = async (postId: string, commentText: string) => {
+    const uiPost = allPosts.find(p => p.id === postId);
+    if (!uiPost) return;
+    const res = await fetch(import.meta.env.VITE_GRAPHQL_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify({
+        query: ADD_COMMENT_MUTATION,
+        variables: { input: { postId: uiPost.id, content: commentText } }
+      }),
+    });
+    await res.json();
+    setRefreshTrigger(prev => prev + 1);
   };
 
   return (
     <div className="space-y-6">
-      <CreatePost />
 
       {allPosts.map((post) => (
         <Post
@@ -86,6 +121,8 @@ const PersonalFeed = () => {
       ))}
     </div>
   );
-};
+});
+
+PersonalFeed.displayName = "PersonalFeed";
 
 export default PersonalFeed;

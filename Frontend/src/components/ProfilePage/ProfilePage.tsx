@@ -14,17 +14,40 @@ import CreatePost from "../CreatePostPage/CreatePost";
 import PostFilter from "./PostFilter";
 import PersonalFeed from "./PersonalFeed";
 import { Link } from "react-router-dom";
-import { useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../Redux Toolkit/hooks";
 import { fetchMe } from "../../Redux Toolkit/slices/userSlice";
+import { GET_MY_FRIENDS_QUERY } from "../../GraphqlOprations/queries";
+
+interface Friend {
+  id: string;
+  firstName: string;
+  surname: string;
+  email: string;
+}
 
 const ProfilePage = () => {
-  // Sample user data
+  const personalFeedRef = useRef<{ refresh: () => void } | null>(null);
+  const [friends, setFriends] = useState<Friend[]>([]);
+  const [friendsCount, setFriendsCount] = useState(0);
+  const [loading, setLoading] = useState(true);
+  
+  const dispatch = useAppDispatch();
+  const me = useAppSelector((s) => s.user.user);
+  
+  const displayName = me ? `${me.firstName} ${me.surname}` : "Konsus Mysvak";
+  const initials = displayName
+    .split(" ")
+    .map((p) => p[0]?.toUpperCase() || "")
+    .join("")
+    .slice(0, 2);
+
+  // Mock user data - replace with actual data
   const userData = {
-    name: "Konsus Mysvak",
-    username: "kashih.mghar",
-    followers: "4.3K",
-    following: "23",
+    name: displayName,
+    username: "Demo",
+    followers: "0",
+    following: "0",
     bio: {
       job: "Web Site Designer at Freshnear",
       education1: "Ghazali education trust school (BMS) per",
@@ -35,46 +58,98 @@ const ProfilePage = () => {
     },
   };
 
-   const dispatch = useAppDispatch();
-    const me = useAppSelector((s) => s.user.user);
-    const displayName = me ? `${me.firstName} ${me.surname}` : userData.name;
-    const initials = displayName
-      .split(" ")
-      .map((p) => p[0]?.toUpperCase() || "")
-      .join("")
-      .slice(0, 2);
+  useEffect(() => {
+    dispatch(fetchMe());
+    loadFriendsData();
+  }, [dispatch]);
 
-   useEffect(() => {
-      dispatch(fetchMe());
-    }, [dispatch]);
-  
+  const loadFriendsData = async () => {
+    try {
+      setLoading(true);
+      
+      // Use the actual GraphQL query
+      const response = await fetch(import.meta.env.VITE_GRAPHQL_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ 
+          query: GET_MY_FRIENDS_QUERY 
+        }),
+      });
+      
+      const json = await response.json();
+      
+      if (json.errors && json.errors.length) {
+        console.error("Error loading friends:", json.errors[0].message);
+        // Fallback mock data in case of error
+        setFriends([
+          { id: "1", firstName: "John", surname: "Doe", email: "john@example.com" },
+          { id: "2", firstName: "Jane", surname: "Smith", email: "jane@example.com" },
+          { id: "3", firstName: "Robert", surname: "Johnson", email: "robert@example.com" },
+          { id: "4", firstName: "Emily", surname: "Williams", email: "emily@example.com" },
+          { id: "5", firstName: "Michael", surname: "Brown", email: "michael@example.com" },
+          { id: "6", firstName: "Sarah", surname: "Davis", email: "sarah@example.com" },
+        ]);
+        setFriendsCount(6);
+        return;
+      }
+      
+      if (json.data?.myFriends) {
+        setFriends(json.data.myFriends);
+        setFriendsCount(json.data.myFriends.length);
+      } else {
+        // No friends found
+        setFriends([]);
+        setFriendsCount(0);
+      }
+    } catch (error) {
+      console.error("Failed to load friends:", error);
+      // Fallback mock data
+      setFriends([
+        { id: "1", firstName: "John", surname: "Doe", email: "john@example.com" },
+        { id: "2", firstName: "Jane", surname: "Smith", email: "jane@example.com" },
+        { id: "3", firstName: "Robert", surname: "Johnson", email: "robert@example.com" },
+      ]);
+      setFriendsCount(3);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Get initials for friend avatars
+  const getFriendInitials = (firstName: string, surname: string) => {
+    return `${firstName.charAt(0)}${surname.charAt(0)}`.toUpperCase();
+  };
+
+  // Display first 6 friends for the friends card
+  const displayedFriends = friends.slice(0, 6);
 
   return (
-    <div className="w-full ">
+    <div className="w-full">
       <div>
         <Navbar />
       </div>
       <div className="flex flex-col items-center justify-center">
-        <div className=" bg-[#FFFFFF] w-full min-h-screen flex flex-col items-center justify-center">
-          <div className="w-full flex items-center justify-center bg-linear-to-t from-white to-gray-200 ">
-            <div className="container px-40 ">
+        <div className="bg-[#FFFFFF] w-full min-h-screen flex flex-col items-center justify-center">
+          <div className="w-full flex items-center justify-center bg-linear-to-t from-white to-gray-200">
+            <div className="lg:container xl:container w-full px-4 md:px-6 lg:px-24 xl:px-40">
               {/* Cover Photo Section */}
               <div className="relative h-96 bg-linear-to-r from-blue-600 to-purple-600">
                 <div className="absolute bottom-4 right-4">
                   <button className="flex items-center gap-2 bg-white px-4 py-2 rounded-lg hover:bg-gray-50 transition">
                     <Camera size={20} />
-                    <span className="font-semibold">Edit cover photo</span>
+                    <span className="font-semibold ">Edit cover photo</span>
                   </button>
                 </div>
 
                 {/* Profile Picture */}
-                <div className="absolute -bottom-16 left-8">
+                <div className="absolute -bottom-10 xl:-bottom-16 left-8">
                   <div className="relative">
-                    <div className="w-40 h-40 rounded-full border-4 border-white bg-linear-to-r from-cyan-500 to-blue-500 flex items-center justify-center text-white text-6xl font-bold">
+                    <div className="w-20 h-20 lg:w-40 lg:h-40 rounded-full border-4 border-white bg-linear-to-r from-cyan-500 to-blue-500 flex items-center justify-center text-white text-2xl lg:text-6xl font-bold">
                       {initials}
                     </div>
-                    <button className="absolute bottom-2 right-2 bg-blue-600 text-white p-2 rounded-full">
-                      <Camera size={20} />
+                    <button className="absolute bottom-2 right-2 bg-blue-600 text-white p-1 rounded-full">
+                      <Camera  className="w-3 h-3   lg:w-6 lg:h-6" />
                     </button>
                   </div>
                 </div>
@@ -88,8 +163,7 @@ const ProfilePage = () => {
                       {displayName}
                     </h1>
                     <p className="text-gray-600 mt-1">
-                      {userData.followers} followers • {userData.following}{" "}
-                      following
+                      {userData.followers} followers • {friendsCount} friends
                     </p>
                   </div>
                   <div className="flex gap-2">
@@ -108,28 +182,27 @@ const ProfilePage = () => {
                   </div>
                 </div>
 
-
-                <div className=" flex items-center justify-between mt-4 border-gray-200  border-t">
+                <div className="flex items-center justify-between mt-4 border-gray-200 border-t">
                   <div className="flex items-center">
-                    <button className="flex items-center pt-4 px-4 text-sm  cursor-pointer font-semibold text-gray-500 hover:text-gray-800 ">
+                    <button className="flex items-center pt-4 px-4 text-sm cursor-pointer font-semibold text-gray-500 hover:text-gray-800">
                       Post
                     </button>
-                    <button className="flex items-center  pt-4 px-4 text-sm cursor-pointer font-semibold text-gray-500 hover:text-gray-800 ">
+                    <button className="flex items-center pt-4 px-4 text-sm cursor-pointer font-semibold text-gray-500 hover:text-gray-800">
                       About
                     </button>
-                    <button className="flex items-center pt-4 px-4 text-sm  cursor-pointer font-semibold text-gray-500 hover:text-gray-800 ">
+                    <button className="flex items-center pt-4 px-4 text-sm cursor-pointer font-semibold text-gray-500 hover:text-gray-800">
                       Reel
                     </button>
-                    <button className="flex items-center pt-4 px-4 text-sm  cursor-pointer font-semibold text-gray-500 hover:text-gray-800 ">
+                    <button className="flex items-center pt-4 px-4 text-sm cursor-pointer font-semibold text-gray-500 hover:text-gray-800">
                       Photos
                     </button>
-                    <button className="flex items-center  pt-4 px-4 text-sm cursor-pointer font-semibold text-gray-500 hover:text-gray-800 ">
+                    <button className="flex items-center pt-4 px-4 text-sm cursor-pointer font-semibold text-gray-500 hover:text-gray-800">
                       Group
                     </button>
-                    <button className="flex items-center  pt-4 px-4 text-sm cursor-pointer font-semibold text-gray-500 hover:text-gray-800 ">
+                    <button className="flex items-center pt-4 px-4 text-sm cursor-pointer font-semibold text-gray-500 hover:text-gray-800">
                       Events
                     </button>
-                    <button className="flex items-center pt-4 px-4 text-sm cursor-pointer font-semibold text-gray-500 hover:text-gray-800 ">
+                    <button className="flex items-center pt-4 px-4 text-sm cursor-pointer font-semibold text-gray-500 hover:text-gray-800">
                       <span>More</span>
                       <ChevronDown className="w-4" />
                     </button>
@@ -143,7 +216,7 @@ const ProfilePage = () => {
           </div>
 
           <div className="bg-[#F2F4F7] w-full">
-            <div className=" container px-40 w-full mx-auto  py-6 grid grid-cols-3 gap-6">
+            <div className="lg:container xl:container  px-4 md:px-6 lg:px-24 xl:px-40 w-full mx-auto py-6 grid grid-cols-3 gap-6">
               {/* Left Sidebar */}
               <div className="col-span-1 space-y-6">
                 {/* Intro Card */}
@@ -197,73 +270,57 @@ const ProfilePage = () => {
                   </div>
 
                   <div className="grid grid-cols-3 gap-2">
-                      <div className=" bg-gray-200 aspect-square bg-linear-to-br from-blue-500 to-purple-500 rounded-lg"></div>
-                      <div className=" bg-gray-200 aspect-square bg-linear-to-br from-blue-500 to-purple-500 rounded-lg"></div>
-                      <div className=" bg-gray-200 aspect-square bg-linear-to-br from-blue-500 to-purple-500 rounded-lg"></div>
-                      <div className=" bg-gray-200 aspect-square bg-linear-to-br from-blue-500 to-purple-500 rounded-lg"></div>
-                      <div className=" bg-gray-200 aspect-square bg-linear-to-br from-blue-500 to-purple-500 rounded-lg"></div>
-                      <div className=" bg-gray-200 aspect-square bg-linear-to-br from-blue-500 to-purple-500 rounded-lg"></div>
-                      <div className=" bg-gray-200 aspect-square bg-linear-to-br from-blue-500 to-purple-500 rounded-lg"></div>
-                      <div className=" bg-gray-200 aspect-square bg-linear-to-br from-blue-500 to-purple-500 rounded-lg"></div>
+                    <div className="bg-gray-200 aspect-square bg-linear-to-br from-blue-500 to-purple-500 rounded-lg"></div>
+                    <div className="bg-gray-200 aspect-square bg-linear-to-br from-blue-500 to-purple-500 rounded-lg"></div>
+                    <div className="bg-gray-200 aspect-square bg-linear-to-br from-blue-500 to-purple-500 rounded-lg"></div>
+                    <div className="bg-gray-200 aspect-square bg-linear-to-br from-blue-500 to-purple-500 rounded-lg"></div>
+                    <div className="bg-gray-200 aspect-square bg-linear-to-br from-blue-500 to-purple-500 rounded-lg"></div>
+                    <div className="bg-gray-200 aspect-square bg-linear-to-br from-blue-500 to-purple-500 rounded-lg"></div>
+                    <div className="bg-gray-200 aspect-square bg-linear-to-br from-blue-500 to-purple-500 rounded-lg"></div>
+                    <div className="bg-gray-200 aspect-square bg-linear-to-br from-blue-500 to-purple-500 rounded-lg"></div>
                   </div>
                 </div>
 
-                {/* friends Card */}
+                {/* Friends Card */}
                 <div className="bg-white rounded-lg shadow p-5">
                   <div className="flex justify-between items-center mb-4">
                     <h2 className="text-xl font-bold">Friends</h2>
                     <Link to={"/friends"}>
-                        <button className="flex items-center gap-2 text-gray-600 hover:text-gray-900">
-                      <span className="text-blue-600 hover:underline cursor-pointer">
+                      <button className="text-blue-600 hover:underline cursor-pointer">
                         See all friends
-                      </span>
-                    </button>
+                      </button>
                     </Link>
                   </div>
 
-                  <div className="gap-2 flex flex-wrap">
-                    <div>
-                      <div className="p-2 bg-gray-50 w-20 h-20 rounded-lg flex items-center justify-center object-cover">
-                        {"img"}
-                      </div>
-                      <p className="pl-2 font-semibold">Name</p>
-                    </div>
+                  <p className="text-gray-600 mb-4">{friendsCount} friends</p>
 
-                    <div>
-                      <div className="p-2 bg-gray-50 w-20 h-20 rounded-lg flex items-center justify-center object-cover">
-                        {"img"}
-                      </div>
-                      <p className="pl-2 font-semibold">Name</p>
+                  {loading ? (
+                    <div className="text-center py-4">
+                      <p className="text-gray-500">Loading friends...</p>
                     </div>
-
-                    <div>
-                      <div className="p-2 bg-gray-50 w-20 h-20 rounded-lg flex items-center justify-center object-cover">
-                        {"img"}
-                      </div>
-                      <p className="pl-2 font-semibold">Name</p>
+                  ) : displayedFriends.length === 0 ? (
+                    <div className="text-center py-4">
+                      <p className="text-gray-500">No friends yet</p>
+                      <Link to="/friends">
+                        <button className="mt-2 text-blue-600 hover:underline">
+                          Find friends
+                        </button>
+                      </Link>
                     </div>
-
-                    <div>
-                      <div className="p-2 bg-gray-50 w-20 h-20 rounded-lg flex items-center justify-center object-cover">
-                        {"img"}
-                      </div>
-                      <p className="pl-2 font-semibold">Name</p>
+                  ) : (
+                    <div className="grid grid-cols-3 gap-4">
+                      {displayedFriends.map((friend) => (
+                        <div key={friend.id} className="text-center">
+                          <div className="w-full aspect-square bg-linear-to-br from-blue-400 to-purple-500 rounded-lg flex items-center justify-center text-white text-xl font-bold mb-2">
+                            {getFriendInitials(friend.firstName, friend.surname)}
+                          </div>
+                          <p className="text-sm font-semibold truncate">
+                            {friend.firstName} {friend.surname.charAt(0)}.
+                          </p>
+                        </div>
+                      ))}
                     </div>
-
-                    <div>
-                      <div className="p-2 bg-gray-50 w-20 h-20 rounded-lg flex items-center justify-center object-cover">
-                        {"img"}
-                      </div>
-                      <p className="pl-2 font-semibold">Name</p>
-                    </div>
-
-                    <div>
-                      <div className="p-2 bg-gray-50 w-20 h-20 rounded-lg flex items-center justify-center object-cover">
-                        {"img"}
-                      </div>
-                      <p className="pl-2 font-semibold">Name</p>
-                    </div>
-                  </div>
+                  )}
                 </div>
               </div>
 
@@ -271,7 +328,12 @@ const ProfilePage = () => {
               <div className="col-span-2 space-y-6">
                 {/* Create Post */}
                 <div>
-                  <CreatePost />
+                  <CreatePost onPostCreated={() => {
+                    // Trigger refresh in PersonalFeed
+                    if (personalFeedRef.current) {
+                      personalFeedRef.current.refresh();
+                    }
+                  }} />
                 </div>
 
                 <div>
@@ -279,7 +341,7 @@ const ProfilePage = () => {
                 </div>
 
                 <div>
-                  <PersonalFeed />
+                  <PersonalFeed ref={personalFeedRef} />
                 </div>
               </div>
             </div>

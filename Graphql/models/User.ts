@@ -8,6 +8,7 @@ export interface IUser extends Document {
   dob: Date;
   gender: string;
   createdAt: Date;
+  friends: mongoose.Types.ObjectId[];
 }
 
 const UserSchema: Schema<IUser> = new Schema<IUser>(
@@ -19,6 +20,7 @@ const UserSchema: Schema<IUser> = new Schema<IUser>(
     dob: { type: Date, required: true },
     gender: { type: String, enum: ["male", "female", "custom"], required: true },
     createdAt: { type: Date, default: Date.now },
+    friends: [{ type: Schema.Types.ObjectId, ref: "User", default: [] }],
   },
   { versionKey: false }
 );

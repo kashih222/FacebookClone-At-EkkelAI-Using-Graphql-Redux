@@ -12,31 +12,31 @@ const Stories = () => {
     { 
       user: 'Jaquelin De Aza', 
       hasStory: true, 
-      color: 'bg-gradient-to-r from-pink-500 to-purple-500',
+      color: 'bg-linear-to-r from-pink-500 to-purple-500',
       link: '#' 
     },
     { 
       user: 'Madiha Guil*', 
       hasStory: true, 
-      color: 'bg-gradient-to-r from-green-500 to-teal-500',
+      color: 'bg-linear-to-r from-green-500 to-teal-500',
       link: '#' 
     },
     { 
       user: 'Makrishan Ali Azjiz*', 
       hasStory: true, 
-      color: 'bg-gradient-to-r from-yellow-500 to-orange-500',
+      color: 'bg-linear-to-r from-yellow-500 to-orange-500',
       link: '#' 
     },
     { 
       user: 'Ahsan Mian', 
       hasStory: true, 
-      color: 'bg-gradient-to-r from-purple-500 to-blue-500',
+      color: 'bg-linear-to-r from-purple-500 to-blue-500',
       link: '#' 
     },
     { 
       user: 'Asif Gujjar', 
       hasStory: true, 
-      color: 'bg-gradient-to-r from-red-500 to-pink-500',
+      color: 'bg-linear-to-r from-red-500 to-pink-500',
       link: '#' 
     },
   ];

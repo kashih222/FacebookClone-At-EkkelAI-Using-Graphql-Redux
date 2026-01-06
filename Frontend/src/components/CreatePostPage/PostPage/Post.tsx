@@ -1,9 +1,10 @@
 import React, { useEffect, useRef, useState } from 'react';
 import {  ThumbsUp,  MessageCircle,  Share2,  MoreHorizontal, Send, Smile, Image as ImageIcon, User, Globe} from 'lucide-react';
+import { FaHeart, FaThumbsUp } from 'react-icons/fa';
 
 interface PostProps {
   post: {
-    id: number;
+    id: string;
     user: {
       name: string;
       avatar: string;
@@ -13,28 +14,22 @@ interface PostProps {
     content: string;
     image: string | null;
     likes: number;
-    comments: number;
+    comments: { id: string; authorName: string; text: string; createdAt: string }[];
     shares: number;
     liked: boolean;
   };
-  onLike: (postId: number) => void;
-  onAddComment: (postId: number, commentText: string) => void;
+  onLike: (postId: string) => void;
+  onAddComment: (postId: string, commentText: string) => void;
 }
 
 const Post: React.FC<PostProps> = ({ post, onLike, onAddComment }) => {
   const [showComments, setShowComments] = useState(false);
   const [commentText, setCommentText] = useState('');
-  const [comments, setComments] = useState([
-    { id: 1, user: 'احمد رضا', text: 'بہت خوب!', time: '2h ago', likes: 45 },
-    { id: 2, user: 'عمران', text: 'ماشاءاللہ', time: '1h ago', likes: 23 },
-    { id: 3, user: 'زبیدہ', text: 'واہ کیا بات ہے', time: '30m ago', likes: 12 }
-  ]);
+  const [comments, setComments] = useState(post.comments || []);
 
   const [showReactions, setShowReactions] = useState(false);
   type ReactionType = 'like' | 'love' | 'haha' | 'wow' | 'sad' | 'angry';
-  const [reaction, setReaction] = useState<ReactionType | null>(
-    post.liked ? 'like' : null
-  );
+  const [reaction, setReaction] = useState<ReactionType | null>(null);
 
     const reactionsRef = useRef<HTMLDivElement>(null);
 
@@ -88,13 +83,7 @@ const Post: React.FC<PostProps> = ({ post, onLike, onAddComment }) => {
   const handleSubmitComment = (e: React.FormEvent) => {
     e.preventDefault();
     if (commentText.trim()) {
-      const newComment = {
-        id: comments.length + 1,
-        user: 'You',
-        text: commentText,
-        time: 'Just now',
-        likes: 0
-      };
+      const newComment = { id: Math.random().toString(), authorName: 'You', text: commentText, createdAt: new Date().toISOString() };
       setComments([newComment, ...comments]);
       onAddComment(post.id, commentText);
       setCommentText('');
@@ -106,6 +95,25 @@ const Post: React.FC<PostProps> = ({ post, onLike, onAddComment }) => {
       return (num / 1000).toFixed(1) + 'K';
     }
     return num.toString();
+  };
+
+  const formatRelativeTime = (iso: string) => {
+    const d = new Date(iso);
+    const now = new Date();
+    const diff = Math.floor((now.getTime() - d.getTime()) / 1000);
+    if (diff < 60) return `${diff}s ago`;
+    const m = Math.floor(diff / 60);
+    if (m < 60) return `${m}m ago`;
+    const h = Math.floor(m / 60);
+    if (h < 24) return `${h}h ago`;
+    const days = Math.floor(h / 24);
+    if (days < 7) return `${days}d ago`;
+    const weeks = Math.floor(days / 7);
+    if (weeks < 4) return `${weeks}w ago`;
+    const months = Math.floor(days / 30);
+    if (months < 12) return `${months}mo ago`;
+    const years = Math.floor(days / 365);
+    return `${years}y ago`;
   };
 
   return (
@@ -123,7 +131,7 @@ const Post: React.FC<PostProps> = ({ post, onLike, onAddComment }) => {
                
               </div>
               <div className="flex items-center space-x-2 text-sm text-gray-500">
-                <span>2h ago</span>
+                <span>{formatRelativeTime(post.user.time)}</span>
                 <span ><Globe className='w-4 h-4'/></span>
               </div>
             </div>
@@ -158,11 +166,12 @@ const Post: React.FC<PostProps> = ({ post, onLike, onAddComment }) => {
             <div className="flex items-center space-x-4">
               <div className="flex items-center">
                 <div className="flex -space-x-2">
-                  <div className="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center text-white text-xs">
-                    👍
+                  <div className="w-5 h-5 bg-blue-500 rounded-full flex items-center justify-center text-white text-xs">
+                    <FaThumbsUp />
                   </div>
-                  <div className="w-6 h-6 bg-red-500 rounded-full flex items-center justify-center text-white text-xs">
-                    ❤️
+                  <div className="w-5 h-5 bg-red-500 rounded-full flex items-center justify-center text-white text-xs">
+                    <FaHeart />
+
                   </div>
                 </div>
                 <span className="ml-2 text-sm">{formatNumber(post.likes)}</span>
@@ -172,7 +181,7 @@ const Post: React.FC<PostProps> = ({ post, onLike, onAddComment }) => {
                 onClick={() => setShowComments(!showComments)}
                 className="text-sm hover:underline"
               >
-                {formatNumber(post.comments)} comments
+                {formatNumber(post.comments.length)} comments
               </button>
               
               <span className="text-sm">{formatNumber(post.shares)} shares</span>
@@ -182,7 +191,7 @@ const Post: React.FC<PostProps> = ({ post, onLike, onAddComment }) => {
       </div>
 
       {/* Post Actions with Reactions */}
-      <div className="border-t border-gray-200 px-4">
+      <div className=" border-gray-200 px-4">
         <div className="flex items-center relative">
           {/* Like Button with Reactions */}
           <div 
@@ -290,19 +299,19 @@ const Post: React.FC<PostProps> = ({ post, onLike, onAddComment }) => {
             {comments.map(comment => (
               <div key={comment.id} className="flex space-x-3">
                 <div className="w-8 h-8 bg-linear-to-r from-blue-400 to-purple-400 rounded-full flex items-center justify-center text-white text-sm">
-                  {comment.user.charAt(0)}
+                  {comment.authorName.charAt(0)}
                 </div>
                 <div className="flex-1">
                   <div className="bg-white rounded-2xl px-4 py-2">
                     <div className="flex items-center justify-between">
-                      <h4 className="font-semibold text-sm">{comment.user}</h4>
-                      <span className="text-xs text-gray-500">{comment.time}</span>
+                      <h4 className="font-semibold text-sm">{comment.authorName}</h4>
+                      <span className="text-xs text-gray-500">{formatRelativeTime(comment.createdAt)}</span>
                     </div>
                     <p className="text-gray-800 mt-1">{comment.text}</p>
                     <div className="flex items-center space-x-4 mt-2 text-xs text-gray-500">
                       <button className="hover:text-gray-700">Like</button>
                       <button className="hover:text-gray-700">Reply</button>
-                      <span>{comment.likes} likes</span>
+                      <span></span>
                     </div>
                   </div>
                 </div>

@@ -10,5 +10,5 @@
     "resolveJsonModule": true,
     "outDir": "dist"
   },
-  "include": ["server.ts", "schema/**/*.ts", "resolver/**/*.ts"]
+  "include": ["server.ts", "awsS3.ts", "schema/**/*.ts", "resolver/**/*.ts"]
 }

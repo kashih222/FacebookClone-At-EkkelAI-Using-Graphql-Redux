@@ -22,6 +22,13 @@ export const typeDefs = `#graphql
 
   type Query {
     greet: String
+    me: User
+    posts: [Post!]!
+    myPosts: [Post!]!
+    users: [User!]!
+    myFriends: [User!]!
+    friendSuggestions: [User!]!
+    friendRequests: [FriendRequest!]!
   }
 
   type Mutation {
@@ -29,6 +36,13 @@ export const typeDefs = `#graphql
     login(email: String!, password: String!): AuthPayload!
     logout: Boolean!
     createPost(input: CreatePostInput!): Post!
+    getUploadTargets(requests: [UploadRequest!]!): [UploadTarget!]!
+    addFriend(userId: ID!): Boolean!
+    sendFriendRequest(userId: ID!): Boolean!
+    acceptFriendRequest(requestId: ID!): Boolean!
+    rejectFriendRequest(requestId: ID!): Boolean!
+    addComment(input: AddCommentInput!): Post!
+    reactPost(input: ReactPostInput!): Post!
   }
 
   type AuthPayload {
@@ -36,10 +50,35 @@ export const typeDefs = `#graphql
     user: User!
   }
 
-  extend type Query {
-    me: User
-    posts: [Post!]!
-    myPosts: [Post!]!
+  enum ReactionType {
+    like
+    love
+    haha
+    wow
+    sad
+    angry
+  }
+
+  type Reaction {
+    user: User!
+    type: String!
+    createdAt: String!
+  }
+
+  type Comment {
+    id: ID!
+    author: User!
+    content: String!
+    createdAt: String!
+  }
+
+  type ReactionSummary {
+    like: Int!
+    love: Int!
+    haha: Int!
+    wow: Int!
+    sad: Int!
+    angry: Int!
   }
 
   type Post {
@@ -49,6 +88,9 @@ export const typeDefs = `#graphql
     imageUrls: [String]
     author: User!
     createdAt: String!
+    comments: [Comment!]!
+    reactions: [Reaction!]!
+    reactionSummary: ReactionSummary!
   }
 
   input CreatePostInput {
@@ -56,5 +98,32 @@ export const typeDefs = `#graphql
     imageUrl: String
     imageUrls: [String]
   }
-`;
+  
+  input AddCommentInput {
+    postId: ID!
+    content: String!
+  }
 
+  input ReactPostInput {
+    postId: ID!
+    type: ReactionType!
+  }
+  
+  input UploadRequest {
+    filename: String!
+    contentType: String!
+  }
+  
+  type UploadTarget {
+    uploadUrl: String!
+    publicUrl: String!
+  }
+
+  type FriendRequest {
+    id: ID!
+    from: User!
+    to: User!
+    status: String!
+    createdAt: String!
+  }
+`;

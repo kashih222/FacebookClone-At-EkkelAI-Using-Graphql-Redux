@@ -2,11 +2,13 @@ import { BookImage, Globe, Smile, Video, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../Redux Toolkit/hooks";
 import { fetchMe } from "../../Redux Toolkit/slices/userSlice";
-import { storage, auth } from "../../firebase";
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import { CREATE_POST_MUTATION } from "../../GraphqlOprations/mutations";
+import { CREATE_POST_MUTATION, GET_UPLOAD_TARGETS_MUTATION } from "../../GraphqlOprations/mutations";
 
-const CreatePost = () => {
+interface CreatePostProps {
+  onPostCreated?: () => void;
+}
+
+const CreatePost = ({ onPostCreated }: CreatePostProps) => {
   const [showModal, setShowModal] = useState(false);
   const [postText, setPostText] = useState("");
   const [open, setOpen] = useState(false);
@@ -31,17 +33,45 @@ const CreatePost = () => {
 
     if (files.length) {
       try {
-        const urls: string[] = [];
-        const uid = auth.currentUser?.uid || "anonymous";
-        for (const f of files) {
-          const path = `posts/${uid}/${Date.now()}-${f.name}`;
-          const storageRef = ref(storage, path);
-          await uploadBytes(storageRef, f);
-          const url = await getDownloadURL(storageRef);
-          urls.push(url);
+        const requests = files.map((f) => ({
+          filename: f.name,
+          contentType: f.type || "application/octet-stream",
+        }));
+        const presignRes = await fetch(import.meta.env.VITE_GRAPHQL_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify({
+            query: GET_UPLOAD_TARGETS_MUTATION,
+            variables: { requests },
+          }),
+        });
+        const presignJson = await presignRes.json();
+        if (presignJson.errors && presignJson.errors.length) {
+          throw new Error(presignJson.errors[0].message || "Presign failed");
         }
-        imageUrls = urls;
-        imageUrl = urls[0];
+        const targets: { uploadUrl: string; publicUrl: string }[] =
+          presignJson.data?.getUploadTargets || [];
+        if (targets.length !== files.length) {
+          throw new Error("Upload targets mismatch");
+        }
+        for (let i = 0; i < files.length; i++) {
+          const f = files[i];
+          const t = targets[i];
+          const putRes = await fetch(t.uploadUrl, {
+            method: "PUT",
+            headers: { 
+              "Content-Type": f.type || "application/octet-stream",
+              "x-amz-acl": "public-read",
+            },
+            body: f,
+          });
+          if (!putRes.ok) {
+            throw new Error(`Upload failed: ${putRes.statusText}`);
+          }
+        }
+        imageUrls = targets.map((t) => t.publicUrl);
+        imageUrl = imageUrls[0];
       } catch (err: unknown) {
         const message =
           err instanceof Error ? err.message : "Image upload failed";
@@ -66,6 +96,10 @@ const CreatePost = () => {
     setPostText("");
     setFiles([]);
     setShowModal(false);
+    // Trigger feed refresh
+    if (onPostCreated) {
+      onPostCreated();
+    }
   };
 
   useEffect(() => {
