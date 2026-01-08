@@ -11,7 +11,7 @@ dotenv.config();
 
 // Initialize S3 (add this near your other imports/initializations)
 const s3 = new AWS.S3({
-  accessKeyId: process.env.AWS_ACCESS_KEY,
+  accessKeyId: process.env.AWS_ACCESS_KEY_ID,
   secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
   region: process.env.AWS_REGION,
   signatureVersion: "v4",
@@ -449,7 +449,7 @@ export const resolvers = {
         reactionSummary: summarizeReactions([]),
       };
     },
-
+    // Add Coment
     addComment: async (
       _: unknown,
       args: { input: { postId: string; content: string } },
@@ -545,7 +545,7 @@ export const resolvers = {
       };
     },
 
-
+    // post Recation
     reactPost: async (
       _: unknown,
       args: { input: { postId: string; type: string } },
