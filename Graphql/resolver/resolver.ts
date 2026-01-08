@@ -74,6 +74,8 @@ export const resolvers = {
       }
     },
 
+   
+
     // Fetch all posts
     posts: async () => {
       const posts = await Post.find()

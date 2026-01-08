@@ -1,7 +1,8 @@
 import { useEffect, useState, useImperativeHandle, forwardRef, useCallback } from "react";
 import Post from "../CreatePostPage/PostPage/Post";
 import { GET_MY_POSTS_QUERY } from "../../GraphqlOprations/queries";
-import { REACT_POST_MUTATION, GET_VIEW_URLS_MUTATION } from "../../GraphqlOprations/mutations";
+import { REACT_POST_MUTATION } from "../../GraphqlOprations/mutations";
+import { GET_VIEW_URLS_MUTATION } from "../../GraphqlOprations/queries";
 
 // Update interfaces based on actual data structure
 type AuthorLike = {
@@ -353,36 +354,7 @@ const PersonalFeed = forwardRef<PersonalFeedHandle, PersonalFeedProps>((_props, 
     }
   };
 
-  // const handleAddComment = async (postId: string, commentText: string) => {
-  //   try {
-  //     if (!commentText.trim()) return;
-      
-  //     const uiPost = allPosts.find(p => p.id === postId);
-  //     if (!uiPost) return;
-      
-  //     const res = await fetch(import.meta.env.VITE_GRAPHQL_URL, {
-  //       method: "POST",
-  //       headers: { "Content-Type": "application/json" },
-  //       credentials: "include",
-  //       body: JSON.stringify({
-  //         query: ADD_COMMENT_MUTATION,
-  //         variables: { input: { postId: uiPost.id, content: commentText } }
-  //       }),
-  //     });
-      
-  //     const json = await res.json();
-      
-  //     if (json.errors && json.errors.length) {
-  //       console.error("Error adding comment:", json.errors[0].message);
-  //       return;
-  //     }
-      
-  //     setRefreshTrigger(prev => prev + 1);
-      
-  //   } catch (error) {
-  //     console.error("Failed to add comment:", error);
-  //   }
-  // };
+
 
   if (loading) {
     return (

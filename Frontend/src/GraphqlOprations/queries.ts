@@ -96,6 +96,9 @@ export const GET_MY_POSTS_QUERY = `
   }
 `;
 
+
+
+
 export const GET_USERS_QUERY = `
   query Users {
     users {
@@ -145,5 +148,12 @@ export const GET_FRIEND_REQUESTS_QUERY = `
       status
       createdAt
     }
+  }
+`;
+
+
+export const GET_VIEW_URLS_MUTATION = `
+  mutation GetViewUrls($urls: [String!]!) {
+    getViewUrls(urls: $urls)
   }
 `;
