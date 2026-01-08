@@ -83,50 +83,56 @@ export const resolvers = {
         .populate("author")
         .populate("comments.author")
         .populate("reactions.user");
-      return posts.map((post: any) => ({
-        id: post._id.toString(),
-        content: post.content,
-        imageUrl: post.imageUrl,
-        imageUrls: post.imageUrls || [],
-        author: {
-          id: post.author._id.toString(),
-          firstName: post.author.firstName,
-          surname: post.author.surname,
-          email: post.author.email,
-          dob: post.author.dob.toISOString(),
-          gender: post.author.gender,
-          createdAt: post.author.createdAt.toISOString(),
-        },
-        createdAt: post.createdAt.toISOString(),
-        comments: (post.comments || []).map((c: any) => ({
-          id: c._id.toString(),
-          content: c.content,
+      return posts
+        .filter((post: any) => post.author && post.author._id) // Filter out posts with null author
+        .map((post: any) => ({
+          id: post._id.toString(),
+          content: post.content,
+          imageUrl: post.imageUrl,
+          imageUrls: post.imageUrls || [],
           author: {
-            id: c.author._id.toString(),
-            firstName: c.author.firstName,
-            surname: c.author.surname,
-            email: c.author.email,
-            dob: c.author.dob.toISOString(),
-            gender: c.author.gender,
-            createdAt: c.author.createdAt.toISOString(),
+            id: post.author._id.toString(),
+            firstName: post.author.firstName,
+            surname: post.author.surname,
+            email: post.author.email,
+            dob: post.author.dob?.toISOString() || new Date().toISOString(),
+            gender: post.author.gender || "",
+            createdAt: post.author.createdAt?.toISOString() || new Date().toISOString(),
           },
-          createdAt: c.createdAt.toISOString(),
-        })),
-        reactions: (post.reactions || []).map((r: any) => ({
-          user: {
-            id: r.user._id.toString(),
-            firstName: r.user.firstName,
-            surname: r.user.surname,
-            email: r.user.email,
-            dob: r.user.dob.toISOString(),
-            gender: r.user.gender,
-            createdAt: r.user.createdAt.toISOString(),
-          },
-          type: r.type,
-          createdAt: r.createdAt.toISOString(),
-        })),
-        reactionSummary: summarizeReactions(post.reactions || []),
-      }));
+          createdAt: post.createdAt.toISOString(),
+          comments: (post.comments || [])
+            .filter((c: any) => c.author && c.author._id) // Filter out comments with null author
+            .map((c: any) => ({
+              id: c._id.toString(),
+              content: c.content,
+              author: {
+                id: c.author._id.toString(),
+                firstName: c.author.firstName,
+                surname: c.author.surname,
+                email: c.author.email,
+                dob: c.author.dob?.toISOString() || new Date().toISOString(),
+                gender: c.author.gender || "",
+                createdAt: c.author.createdAt?.toISOString() || new Date().toISOString(),
+              },
+              createdAt: c.createdAt.toISOString(),
+            })),
+          reactions: (post.reactions || [])
+            .filter((r: any) => r.user && r.user._id) // Filter out reactions with null user
+            .map((r: any) => ({
+              user: {
+                id: r.user._id.toString(),
+                firstName: r.user.firstName,
+                surname: r.user.surname,
+                email: r.user.email,
+                dob: r.user.dob?.toISOString() || new Date().toISOString(),
+                gender: r.user.gender || "",
+                createdAt: r.user.createdAt?.toISOString() || new Date().toISOString(),
+              },
+              type: r.type,
+              createdAt: r.createdAt.toISOString(),
+            })),
+          reactionSummary: summarizeReactions(post.reactions || []),
+        }));
     },
 
     // Fetch my posts
@@ -144,47 +150,57 @@ export const resolvers = {
         .populate("author")
         .populate("comments.author")
         .populate("reactions.user");
-      return posts.map((post: any) => ({
-        id: post._id.toString(),
-        content: post.content,
-        imageUrl: post.imageUrl,
-        imageUrls: post.imageUrls || [],
-        author: {
-          id: post.author._id.toString(),
-          firstName: post.author.firstName,
-          surname: post.author.surname,
-          email: post.author.email,
-        
-          createdAt: post.author.createdAt.toISOString(),
-        },
-        createdAt: post.createdAt.toISOString(),
-        comments: (post.comments || []).map((c: any) => ({
-          id: c._id.toString(),
+      
+      return posts
+        .filter((post: any) => post.author && post.author._id) 
+        .map((post: any) => ({
+          id: post._id.toString(),
+          content: post.content,
+          imageUrl: post.imageUrl,
+          imageUrls: post.imageUrls || [],
           author: {
-            id: c.author._id.toString(),
-            firstName: c.author.firstName,
-            surname: c.author.surname,
-            email: c.author.email,
-         
-            createdAt: c.author.createdAt.toISOString(),
+            id: post.author._id.toString(),
+            firstName: post.author.firstName,
+            surname: post.author.surname,
+            email: post.author.email,
+            dob: post.author.dob?.toISOString() || new Date().toISOString(),
+            gender: post.author.gender || "",
+            createdAt: post.author.createdAt?.toISOString() || new Date().toISOString(),
           },
-          content: c.content,
-          createdAt: c.createdAt.toISOString(),
-        })),
-        reactions: (post.reactions || []).map((r: any) => ({
-          user: {
-            id: r.user._id.toString(),
-            firstName: r.user.firstName,
-            surname: r.user.surname,
-            email: r.user.email,
-          
-            createdAt: r.user.createdAt.toISOString(),
-          },
-          type: r.type,
-          createdAt: r.createdAt.toISOString(),
-        })),
-        reactionSummary: summarizeReactions(post.reactions || []),
-      }));
+          createdAt: post.createdAt.toISOString(),
+          comments: (post.comments || [])
+            .filter((c: any) => c.author && c.author._id) 
+            .map((c: any) => ({
+              id: c._id.toString(),
+              author: {
+                id: c.author._id.toString(),
+                firstName: c.author.firstName,
+                surname: c.author.surname,
+                email: c.author.email,
+                dob: c.author.dob?.toISOString() || new Date().toISOString(),
+                gender: c.author.gender || "",
+                createdAt: c.author.createdAt?.toISOString() || new Date().toISOString(),
+              },
+              content: c.content,
+              createdAt: c.createdAt.toISOString(),
+            })),
+          reactions: (post.reactions || [])
+            .filter((r: any) => r.user && r.user._id) 
+            .map((r: any) => ({
+              user: {
+                id: r.user._id.toString(),
+                firstName: r.user.firstName,
+                surname: r.user.surname,
+                email: r.user.email,
+                dob: r.user.dob?.toISOString() || new Date().toISOString(),
+                gender: r.user.gender || "",
+                createdAt: r.user.createdAt?.toISOString() || new Date().toISOString(),
+              },
+              type: r.type,
+              createdAt: r.createdAt.toISOString(),
+            })),
+          reactionSummary: summarizeReactions(post.reactions || []),
+        }));
     },
 
     // All users
@@ -211,14 +227,17 @@ export const resolvers = {
       const me = await User.findById(payload.uid).populate("friends");
       if (!me) throw new Error("User not found");
       const friends = (me.friends as any[]) || [];
-      return friends.map((u) => ({
-        id: u._id.toString(),
-        firstName: u.firstName,
-        surname: u.surname,
-        email: u.email,
-     
-        createdAt: u.createdAt.toISOString(),
-      }));
+      return friends
+        .filter((u) => u && u._id) 
+        .map((u) => ({
+          id: u._id.toString(),
+          firstName: u.firstName,
+          surname: u.surname,
+          email: u.email,
+          dob: u.dob?.toISOString() || new Date().toISOString(),
+          gender: u.gender || "",
+          createdAt: u.createdAt?.toISOString() || new Date().toISOString(),
+        }));
     },
 
     // Friend suggestions
@@ -282,28 +301,31 @@ export const resolvers = {
         .populate("from")
         .sort({ createdAt: -1 });
 
-      return requests.map((req: any) => ({
-        id: req._id.toString(),
-        from: {
-          id: req.from._id.toString(),
-          firstName: req.from.firstName,
-          surname: req.from.surname,
-          email: req.from.email,
-        
-          createdAt: req.from.createdAt.toISOString(),
-        },
-        to: {
-          id: payload.uid,
-          firstName: "",
-          surname: "",
-          email: "",
-          dob: "",
-          gender: "",
-          createdAt: "",
-        },
-        status: req.status,
-        createdAt: req.createdAt.toISOString(),
-      }));
+      return requests
+        .filter((req: any) => req.from && req.from._id) 
+        .map((req: any) => ({
+          id: req._id.toString(),
+          from: {
+            id: req.from._id.toString(),
+            firstName: req.from.firstName,
+            surname: req.from.surname,
+            email: req.from.email,
+            dob: req.from.dob?.toISOString() || new Date().toISOString(),
+            gender: req.from.gender || "",
+            createdAt: req.from.createdAt?.toISOString() || new Date().toISOString(),
+          },
+          to: {
+            id: payload.uid,
+            firstName: "",
+            surname: "",
+            email: "",
+            dob: "",
+            gender: "",
+            createdAt: "",
+          },
+          status: req.status,
+          createdAt: req.createdAt.toISOString(),
+        }));
     },
   },
 
@@ -501,6 +523,9 @@ export const resolvers = {
         .populate("comments.author")
         .populate("reactions.user");
       const p: any = populated;
+      if (!p || !p.author || !p.author._id) {
+        throw new Error("Post or author not found after update");
+      }
       return {
         id: p._id.toString(),
         content: p.content,
@@ -511,38 +536,42 @@ export const resolvers = {
           firstName: p.author.firstName,
           surname: p.author.surname,
           email: p.author.email,
-          dob: p.author.dob.toISOString(),
-          gender: p.author.gender,
-          createdAt: p.author.createdAt.toISOString(),
+          dob: p.author.dob?.toISOString() || new Date().toISOString(),
+          gender: p.author.gender || "",
+          createdAt: p.author.createdAt?.toISOString() || new Date().toISOString(),
         },
         createdAt: p.createdAt.toISOString(),
-        comments: (p.comments || []).map((c: any) => ({
-          id: c._id.toString(),
-          author: {
-            id: c.author._id.toString(),
-            firstName: c.author.firstName,
-            surname: c.author.surname,
-            email: c.author.email,
-            dob: c.author.dob.toISOString(),
-            gender: c.author.gender,
-            createdAt: c.author.createdAt.toISOString(),
-          },
-          content: c.content,
-          createdAt: c.createdAt.toISOString(),
-        })),
-        reactions: (p.reactions || []).map((r: any) => ({
-          user: {
-            id: r.user._id.toString(),
-            firstName: r.user.firstName,
-            surname: r.user.surname,
-            email: r.user.email,
-            dob: r.user.dob.toISOString(),
-            gender: r.user.gender,
-            createdAt: r.user.createdAt.toISOString(),
-          },
-          type: r.type,
-          createdAt: r.createdAt.toISOString(),
-        })),
+        comments: (p.comments || [])
+          .filter((c: any) => c.author && c.author._id) 
+          .map((c: any) => ({
+            id: c._id.toString(),
+            author: {
+              id: c.author._id.toString(),
+              firstName: c.author.firstName,
+              surname: c.author.surname,
+              email: c.author.email,
+              dob: c.author.dob?.toISOString() || new Date().toISOString(),
+              gender: c.author.gender || "",
+              createdAt: c.author.createdAt?.toISOString() || new Date().toISOString(),
+            },
+            content: c.content,
+            createdAt: c.createdAt.toISOString(),
+          })),
+        reactions: (p.reactions || [])
+          .filter((r: any) => r.user && r.user._id) 
+          .map((r: any) => ({
+            user: {
+              id: r.user._id.toString(),
+              firstName: r.user.firstName,
+              surname: r.user.surname,
+              email: r.user.email,
+              dob: r.user.dob?.toISOString() || new Date().toISOString(),
+              gender: r.user.gender || "",
+              createdAt: r.user.createdAt?.toISOString() || new Date().toISOString(),
+            },
+            type: r.type,
+            createdAt: r.createdAt.toISOString(),
+          })),
         reactionSummary: summarizeReactions(p.reactions || []),
       };
     },
@@ -588,6 +617,9 @@ export const resolvers = {
         .populate("comments.author")
         .populate("reactions.user");
       const p: any = populated;
+      if (!p || !p.author || !p.author._id) {
+        throw new Error("Post or author not found after update");
+      }
       return {
         id: p._id.toString(),
         content: p.content,
@@ -598,38 +630,42 @@ export const resolvers = {
           firstName: p.author.firstName,
           surname: p.author.surname,
           email: p.author.email,
-          dob: p.author.dob.toISOString(),
-          gender: p.author.gender,
-          createdAt: p.author.createdAt.toISOString(),
+          dob: p.author.dob?.toISOString() || new Date().toISOString(),
+          gender: p.author.gender || "",
+          createdAt: p.author.createdAt?.toISOString() || new Date().toISOString(),
         },
         createdAt: p.createdAt.toISOString(),
-        comments: (p.comments || []).map((c: any) => ({
-          id: c._id.toString(),
-          author: {
-            id: c.author._id.toString(),
-            firstName: c.author.firstName,
-            surname: c.author.surname,
-            email: c.author.email,
-            dob: c.author.dob.toISOString(),
-            gender: c.author.gender,
-            createdAt: c.author.createdAt.toISOString(),
-          },
-          content: c.content,
-          createdAt: c.createdAt.toISOString(),
-        })),
-        reactions: (p.reactions || []).map((r: any) => ({
-          user: {
-            id: r.user._id.toString(),
-            firstName: r.user.firstName,
-            surname: r.user.surname,
-            email: r.user.email,
-            dob: r.user.dob.toISOString(),
-            gender: r.user.gender,
-            createdAt: r.user.createdAt.toISOString(),
-          },
-          type: r.type,
-          createdAt: r.createdAt.toISOString(),
-        })),
+        comments: (p.comments || [])
+          .filter((c: any) => c.author && c.author._id) 
+          .map((c: any) => ({
+            id: c._id.toString(),
+            author: {
+              id: c.author._id.toString(),
+              firstName: c.author.firstName,
+              surname: c.author.surname,
+              email: c.author.email,
+              dob: c.author.dob?.toISOString() || new Date().toISOString(),
+              gender: c.author.gender || "",
+              createdAt: c.author.createdAt?.toISOString() || new Date().toISOString(),
+            },
+            content: c.content,
+            createdAt: c.createdAt.toISOString(),
+          })),
+        reactions: (p.reactions || [])
+          .filter((r: any) => r.user && r.user._id) // Filter out reactions with null user
+          .map((r: any) => ({
+            user: {
+              id: r.user._id.toString(),
+              firstName: r.user.firstName,
+              surname: r.user.surname,
+              email: r.user.email,
+              dob: r.user.dob?.toISOString() || new Date().toISOString(),
+              gender: r.user.gender || "",
+              createdAt: r.user.createdAt?.toISOString() || new Date().toISOString(),
+            },
+            type: r.type,
+            createdAt: r.createdAt.toISOString(),
+          })),
         reactionSummary: summarizeReactions(p.reactions || []),
       };
     },
