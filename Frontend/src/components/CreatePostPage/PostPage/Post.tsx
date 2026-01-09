@@ -153,7 +153,6 @@ const Post: React.FC<PostProps> = ({ post, onLike }) => {
         return;
       }
 
-      // Refresh posts after adding comment
     } catch (error) {
       console.error("Failed to add comment:", error);
     }

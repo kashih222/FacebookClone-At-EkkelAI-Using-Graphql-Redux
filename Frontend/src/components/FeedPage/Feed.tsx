@@ -186,7 +186,6 @@ const Feed = ({ refreshTrigger = 0 }: FeedProps) => {
         };
       });
 
-      // Sort posts by creation date (newest first)
       mapped.sort((a, b) => {
         const postA = list.find((p) => p.id === a.id);
         const postB = list.find((p) => p.id === b.id);
@@ -196,7 +195,7 @@ const Feed = ({ refreshTrigger = 0 }: FeedProps) => {
         const dateA = new Date(postA.createdAt).getTime();
         const dateB = new Date(postB.createdAt).getTime();
 
-        return dateB - dateA; // Newest first
+        return dateB - dateA;
       });
 
       const allUrls = Array.from(
@@ -243,7 +242,6 @@ const Feed = ({ refreshTrigger = 0 }: FeedProps) => {
       const uiPost = allPosts.find((p) => p.id === postId);
       if (!uiPost) return;
 
-      // Optimistic update
       setAllPosts((prev) =>
         prev.map((post) =>
           post.id === postId
@@ -270,7 +268,6 @@ const Feed = ({ refreshTrigger = 0 }: FeedProps) => {
 
       if (json.errors && json.errors.length) {
         console.error("Error liking post:", json.errors[0].message);
-        // Revert optimistic update on error
         setAllPosts((prev) =>
           prev.map((post) =>
             post.id === postId
@@ -286,7 +283,6 @@ const Feed = ({ refreshTrigger = 0 }: FeedProps) => {
       }
     } catch (error) {
       console.error("Failed to like post:", error);
-      // Revert optimistic update on error
       setAllPosts((prev) =>
         prev.map((post) =>
           post.id === postId

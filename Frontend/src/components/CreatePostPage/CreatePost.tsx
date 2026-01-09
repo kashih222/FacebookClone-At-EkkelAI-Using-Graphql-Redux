@@ -5,6 +5,7 @@ import type { RootState } from "../../Redux Toolkit/Store";
 import { fetchMe } from "../../Redux Toolkit/slices/userSlice";
 import { CREATE_POST_MUTATION, GET_UPLOAD_TARGETS_MUTATION, } from "../../GraphqlOprations/mutations";
 import toast from "react-hot-toast";
+import { Link } from "react-router-dom";
 
 interface CreatePostProps {
   onPostCreated?: () => void;
@@ -197,9 +198,11 @@ const CreatePost = ({ onPostCreated }: CreatePostProps) => {
     <>
       <div className="bg-white rounded-lg shadow-sm p-4 mb-4 flex items-center gap-2  w-full">
         <div className="flex items-center space-x-3 w-full">
+         <Link to={"/myprofile"}>
           <div className="w-10 h-10 bg-linear-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center text-white font-bold">
             {initials}
           </div>
+         </Link>
           <button
             onClick={() => setShowModal(true)}
             className="flex-1 text-left w-full cursor-pointer bg-gray-100 hover:bg-gray-200 text-gray-500 rounded-full px-4 py-3 transition-colors"

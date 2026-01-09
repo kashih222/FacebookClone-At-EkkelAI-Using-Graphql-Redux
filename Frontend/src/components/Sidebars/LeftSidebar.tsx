@@ -12,12 +12,11 @@ import MetaLogo from "../../assets/Meta-AI-Logo-Mark-PNG.png";
 import { FaSave } from "react-icons/fa";
 import { MdGroups2 } from "react-icons/md";
 import { Link } from "react-router-dom";
-import { fetchMe } from "../../Redux Toolkit/slices/userSlice"
+import { fetchMe } from "../../Redux Toolkit/slices/userSlice";
 import { useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "../../Redux Toolkit/hooks";
 
 const LeftSidebar = () => {
-
   const dispatch = useAppDispatch();
   const me = useAppSelector((s) => s.user.user);
   const displayName = me ? `${me.firstName} ${me.surname}` : "User Name";
@@ -25,17 +24,20 @@ const LeftSidebar = () => {
   useEffect(() => {
     dispatch(fetchMe());
   }, [dispatch]);
-  
+
   return (
     <div className="fixed top-18 h-[calc(100vh-90px)] w-74 ">
       {/* User Profile */}
       <div className="mb-6 h-[calc(100vh-150px)]  overflow-auto">
-        <div className="flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-200 cursor-pointer">
-          <div className="w-10 h-10 bg-linear-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center text-white font-bold">
-            {initials}
+        <Link to={"/myprofile"}>
+          <div className="flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-200 cursor-pointer">
+            <div className="w-10 h-10 bg-linear-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center text-white font-bold">
+              {initials}
+            </div>
+            <span className="font-medium">{displayName}</span>
           </div>
-          <span className="font-medium">{displayName}</span>
-        </div>
+        </Link>
+
         <div className="flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-200 cursor-pointer">
           <div className="w-12 h-12 flex items-center justify-center text-white font-bold">
             <img src={MetaLogo} alt="" className="mr-2" />
@@ -44,11 +46,11 @@ const LeftSidebar = () => {
         </div>
         <Link to={"/friends"}>
           <div className="flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-200 cursor-pointer">
-          <div className="rounded-full flex items-center justify-center text-purple-500 font-bold">
-            <Users className=" w-10 h-10" />
+            <div className="rounded-full flex items-center justify-center text-purple-500 font-bold">
+              <Users className=" w-10 h-10" />
+            </div>
+            <span className="font-medium">Friends</span>
           </div>
-          <span className="font-medium">Friends</span>
-        </div>
         </Link>
         <div className="flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-200 cursor-pointer">
           <div className="rounded-full flex items-center justify-center text-purple-500 font-bold">

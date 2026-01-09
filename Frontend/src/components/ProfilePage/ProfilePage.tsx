@@ -497,7 +497,7 @@ const ProfilePage = () => {
                             )}
                           </div>
                           <p className="text-sm font-semibold truncate">
-                            {friend.firstName} {friend.surname.charAt(0)}.
+                            {friend.firstName} {friend.surname.charAt(0)}
                           </p>
                         </div>
                       ))}
