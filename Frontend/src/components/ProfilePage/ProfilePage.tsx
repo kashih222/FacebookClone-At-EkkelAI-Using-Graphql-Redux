@@ -61,22 +61,6 @@ const ProfilePage = () => {
     .join("")
     .slice(0, 2);
 
-  // Mock user data - replace with actual data
-  const userData = {
-    name: displayName,
-    username: "Demo",
-    followers: "0",
-    following: "0",
-    bio: {
-      job: "Web Site Designer at Freshnear",
-      education1: "Ghazali education trust school (BMS) per",
-      education2: "Government Islamic College, Civil Lines, Lahore",
-      location: "Lahore, Pakistan",
-      hometown: "Shakespeare, Punjab, Pakistan",
-      relationship: "In a relationship",
-    },
-  };
-
   useEffect(() => {
     dispatch(fetchMe());
     loadFriendsData();
@@ -190,46 +174,6 @@ const ProfilePage = () => {
 
       if (json.errors && json.errors.length) {
         console.error("Error loading friends:", json.errors[0].message);
-        // Fallback mock data in case of error
-        setFriends([
-          {
-            id: "1",
-            firstName: "John",
-            surname: "Doe",
-            email: "john@example.com",
-          },
-          {
-            id: "2",
-            firstName: "Jane",
-            surname: "Smith",
-            email: "jane@example.com",
-          },
-          {
-            id: "3",
-            firstName: "Robert",
-            surname: "Johnson",
-            email: "robert@example.com",
-          },
-          {
-            id: "4",
-            firstName: "Emily",
-            surname: "Williams",
-            email: "emily@example.com",
-          },
-          {
-            id: "5",
-            firstName: "Michael",
-            surname: "Brown",
-            email: "michael@example.com",
-          },
-          {
-            id: "6",
-            firstName: "Sarah",
-            surname: "Davis",
-            email: "sarah@example.com",
-          },
-        ]);
-        setFriendsCount(6);
         return;
       }
 
@@ -237,45 +181,20 @@ const ProfilePage = () => {
         setFriends(json.data.myFriends);
         setFriendsCount(json.data.myFriends.length);
       } else {
-        // No friends found
         setFriends([]);
         setFriendsCount(0);
       }
     } catch (error) {
       console.error("Failed to load friends:", error);
-      // Fallback mock data
-      setFriends([
-        {
-          id: "1",
-          firstName: "John",
-          surname: "Doe",
-          email: "john@example.com",
-        },
-        {
-          id: "2",
-          firstName: "Jane",
-          surname: "Smith",
-          email: "jane@example.com",
-        },
-        {
-          id: "3",
-          firstName: "Robert",
-          surname: "Johnson",
-          email: "robert@example.com",
-        },
-      ]);
-      setFriendsCount(3);
     } finally {
       setLoading(false);
     }
   };
 
-  // Get initials for friend avatars
   const getFriendInitials = (firstName: string, surname: string) => {
     return `${firstName.charAt(0)}${surname.charAt(0)}`.toUpperCase();
   };
 
-  // Display first 6 friends for the friends card
   const displayedFriends = friends.slice(0, 6);
 
   return (
@@ -317,7 +236,7 @@ const ProfilePage = () => {
                       {displayName}
                     </h1>
                     <p className="text-gray-600 mt-1">
-                      {userData.followers} followers • {friendsCount} friends
+                      0 followers  {friendsCount} friends
                     </p>
                   </div>
                   <div className="flex gap-2">
@@ -380,29 +299,29 @@ const ProfilePage = () => {
                   <div className="space-y-4">
                     <div className="flex items-center gap-3">
                       <Briefcase size={20} className="text-gray-500" />
-                      <span>{userData.bio.job}</span>
+                      <span>@MERN Intern at EkkelAI</span>
                     </div>
 
                     <div className="flex items-center gap-3">
                       <GraduationCap size={30} className="text-gray-500" />
                       <div>
-                        <p>Studies at {userData.bio.education1}</p>
+                        <p>Studies at PU</p>
                       </div>
                     </div>
 
                     <div className="flex items-center gap-3">
                       <MapPin size={20} className="text-gray-500" />
-                      <span>Lives in {userData.bio.location}</span>
+                      <span>Lives in Lahore</span>
                     </div>
 
                     <div className="flex items-center gap-3">
                       <MapPin size={20} className="text-gray-500" />
-                      <span>From {userData.bio.hometown}</span>
+                      <span>From ShakarGarh</span>
                     </div>
 
                     <div className="flex items-center gap-3">
                       <Heart size={20} className="text-gray-500" />
-                      <span>{userData.bio.relationship}</span>
+                      <span>In Relationship</span>
                     </div>
                   </div>
 
@@ -424,7 +343,6 @@ const ProfilePage = () => {
                   </div>
                   <div className="grid grid-cols-3 gap-2">
                     {photoLoading ? (
-                      // Show loading skeleton
                       Array.from({ length: 9 }).map((_, i) => (
                         <div
                           key={i}
@@ -447,10 +365,8 @@ const ProfilePage = () => {
                           className="w-full h-24 object-cover rounded-md hover:opacity-90 transition-opacity cursor-pointer"
                           alt={`Photo ${i + 1}`}
                           onError={(e) => {
-                            // Fallback to original URL if converted URL fails
                             const img = e.target as HTMLImageElement;
-                            // You might want to extract the original S3 URL from the converted one
-                            // Or just show a placeholder
+                          
                             img.src =
                               "https://via.placeholder.com/150?text=Image+Error";
                           }}
@@ -512,7 +428,6 @@ const ProfilePage = () => {
                 <div>
                   <CreatePost
                     onPostCreated={() => {
-                      // Trigger refresh in PersonalFeed
                       if (personalFeedRef.current) {
                         personalFeedRef.current.refresh();
                       }

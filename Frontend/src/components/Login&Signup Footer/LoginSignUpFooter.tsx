@@ -40,7 +40,6 @@ const LoginSignUpFooter = () => {
         <a className="hover:underline" href=""> Contact</a> 
         <a className="hover:underline" href=""> uploading and non-users</a> 
         <a className="hover:underline" href=""> Help</a> 
-        <a className="hover:underline" href=""> Help</a>            
       </div>
     </div>
   );

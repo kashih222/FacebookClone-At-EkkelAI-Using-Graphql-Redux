@@ -77,23 +77,12 @@ const FriendsPageHome = () => {
         isFriendRequest: true
       })) || [];
 
-      // Combine both arrays and shuffle them
       const combined = [...friends, ...friendRequests];
-      // Optional: shuffle the array for mixed display
       const shuffled = combined.sort(() => Math.random() - 0.5);
       
       setMixedData(shuffled);
     } catch (error) {
       console.error("Failed to load data:", error);
-      // Fallback mock data
-      setMixedData([
-        { id: "1", firstName: "John", surname: "Doe", email: "john@example.com", isFriendRequest: false },
-        { id: "2", firstName: "Jane", surname: "Smith", email: "jane@example.com", isFriendRequest: false },
-        { id: "req1", from: { id: "3", firstName: "Robert", surname: "Johnson", email: "robert@example.com" }, createdAt: new Date().toISOString(), isFriendRequest: true },
-        { id: "4", firstName: "Emily", surname: "Williams", email: "emily@example.com", isFriendRequest: false },
-        { id: "req2", from: { id: "5", firstName: "Michael", surname: "Brown", email: "michael@example.com" }, createdAt: new Date().toISOString(), isFriendRequest: true },
-        { id: "6", firstName: "Sarah", surname: "Davis", email: "sarah@example.com", isFriendRequest: false },
-      ]);
     } finally {
       setLoading(false);
     }
