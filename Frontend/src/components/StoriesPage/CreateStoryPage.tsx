@@ -110,7 +110,6 @@ const CreateStoryPage = () => {
           </div>
         </div>
 
-        {/* Additional Sidebar Items (Optional - add more if needed) */}
         <div className={`${isSidebarOpen ? "block" : "hidden"} px-3 py-4`}>
           <p className="text-gray-600">Create a story to share with friends</p>
         </div>

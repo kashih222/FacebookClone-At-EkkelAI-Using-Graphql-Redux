@@ -213,22 +213,7 @@ const FriendsSuggestion = () => {
               );
             })}
 
-            {/* Add Friend Card */}
-            <div className="bg-white rounded-lg sm:rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow">
-              <div className="h-32 sm:h-40 md:h-48 bg-linear-to-r from-gray-100 to-gray-200 flex items-center justify-center">
-                <div className="text-center">
-                  <div className="w-16 h-16 sm:w-20 sm:h-20 bg-gray-300 rounded-full flex items-center justify-center mx-auto mb-2 sm:mb-4">
-                    <UserPlus className="w-8 h-8 sm:w-10 sm:h-10 text-gray-600" />
-                  </div>
-                  <p className="text-gray-600 font-medium text-xs sm:text-sm md:text-base">Add more friends</p>
-                </div>
-              </div>
-              <div className="p-3 sm:p-4">
-                <button className="w-full bg-gray-100 hover:bg-gray-200 text-gray-800 font-medium py-2 sm:py-3 px-3 sm:px-4 rounded-lg transition-colors text-xs sm:text-sm">
-                  Find Friends
-                </button>
-              </div>
-            </div>
+            
           </div>
 
           {/* No Suggestions Message */}

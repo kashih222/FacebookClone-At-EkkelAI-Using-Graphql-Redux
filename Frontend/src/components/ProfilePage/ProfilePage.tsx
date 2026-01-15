@@ -50,9 +50,13 @@ const ProfilePage = () => {
   const [loading, setLoading] = useState(true);
   const [photos, setPhotos] = useState<string[]>([]);
   const [photoLoading, setPhotoLoading] = useState(false);
+  const [showAuthModal, setShowAuthModal] = useState(false);
 
   const dispatch = useAppDispatch();
   const me = useAppSelector((s) => s.user.user);
+  const userStatus = useAppSelector((s) => s.user.status);
+  const isAuthenticated = !!me;
+  const isLoading = userStatus === "loading";
 
   const displayName = me ? `${me.firstName} ${me.surname}` : "Konsus Mysvak";
   const initials = displayName
@@ -63,9 +67,20 @@ const ProfilePage = () => {
 
   useEffect(() => {
     dispatch(fetchMe());
-    loadFriendsData();
-    loadPhotos();
   }, [dispatch]);
+
+  useEffect(() => {
+    if (isLoading) return; // Wait for auth check to complete
+    
+    if (me) {
+      // Only load data if user is authenticated
+      loadFriendsData();
+      loadPhotos();
+    } else {
+      // Show modal if user is not authenticated
+      setShowAuthModal(true);
+    }
+  }, [me, isLoading]);
 
   const loadPhotos = async () => {
     try {
@@ -195,6 +210,54 @@ const ProfilePage = () => {
   };
 
   const displayedFriends = friends.slice(0, 6);
+
+  // Show loading state while checking authentication
+  if (isLoading) {
+    return (
+      <div className="w-full min-h-screen bg-gray-100">
+        <Navbar />
+        <div className="flex justify-center items-center py-12">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+        </div>
+      </div>
+    );
+  }
+
+  // Don't render profile content if not authenticated
+  if (!isAuthenticated) {
+    return (
+      <div className="w-full min-h-screen bg-gray-100">
+        <Navbar />
+        {/* Auth required modal */}
+        {showAuthModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+            <div className="bg-white rounded-lg shadow-xl max-w-sm w-full p-6">
+              <h2 className="text-lg font-semibold mb-2 text-gray-900">
+                Sign in to continue
+              </h2>
+              <p className="text-sm text-gray-600 mb-4">
+                You need to be signed in to like posts or add comments.
+              </p>
+              <div className="flex justify-end space-x-2">
+                <button
+                  onClick={() => setShowAuthModal(false)}
+                  className="px-3 py-1.5 text-sm rounded-md border border-gray-300 text-gray-700 hover:bg-gray-50"
+                >
+                  Cancel
+                </button>
+                <a
+                  href="/login"
+                  className="px-3 py-1.5 text-sm rounded-md bg-blue-600 text-white hover:bg-blue-700"
+                >
+                  Sign in
+                </a>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  }
 
   return (
     <div className="w-full">

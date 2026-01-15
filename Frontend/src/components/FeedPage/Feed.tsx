@@ -1,8 +1,9 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import Post from "../CreatePostPage/PostPage/Post";
 import { GET_ALL_POSTS_QUERY } from "../../GraphqlOprations/queries";
-import {REACT_POST_MUTATION } from "../../GraphqlOprations/mutations";
+import { REACT_POST_MUTATION } from "../../GraphqlOprations/mutations";
 import { GET_VIEW_URLS_MUTATION } from "../../GraphqlOprations/queries";
+import { useAppSelector } from "../../Redux Toolkit/hooks";
 
 interface FeedProps {
   refreshTrigger?: number;
@@ -52,6 +53,12 @@ interface UIPost {
 const Feed = ({ refreshTrigger = 0 }: FeedProps) => {
   const [allPosts, setAllPosts] = useState<UIPost[]>([]);
   const [loading, setLoading] = useState(true);
+  const [visibleCount, setVisibleCount] = useState(10);
+  const [showAuthModal, setShowAuthModal] = useState(false);
+  const sentinelRef = useRef<HTMLDivElement | null>(null);
+
+  const currentUser = useAppSelector((state) => state.user.user);
+  const isAuthenticated = !!currentUser;
 
   const sanitizeUrl = (url?: string | null): string | null => {
     if (!url || typeof url !== "string") return null;
@@ -116,13 +123,6 @@ const Feed = ({ refreshTrigger = 0 }: FeedProps) => {
     return `${first}${last}`.toUpperCase() || "U";
   };
 
-  const checkIfLikedByCurrentUser = (
-    _reactions: { type: string; createdAt: string; user: { id: string } }[]
-  ): boolean => {
-    return false;
-    console.log(_reactions)
-  };
-
   const loadPosts = useCallback(async () => {
     try {
       setLoading(true);
@@ -180,7 +180,11 @@ const Feed = ({ refreshTrigger = 0 }: FeedProps) => {
             createdAt: formatTimeAgo(c.createdAt),
           })),
           shares: shareReactions.length,
-          liked: checkIfLikedByCurrentUser(p.reactions),
+          liked: currentUser
+            ? p.reactions?.some(
+                (r) => r.type === "like" && r.user && r.user.id === currentUser.id
+              ) || false
+            : false,
         };
       });
 
@@ -195,6 +199,15 @@ const Feed = ({ refreshTrigger = 0 }: FeedProps) => {
 
         return dateB - dateA;
       });
+
+      // Decide whether to sign URLs based on auth state.
+      // If the user is not logged in, we return the original URLs (public images keep working)
+      // and skip calling the signing endpoint (which likely requires auth).
+      const userAuthenticated = !!currentUser;
+      if (!userAuthenticated) {
+        setAllPosts(mapped);
+        return;
+      }
 
       const allUrls = Array.from(
         new Set(
@@ -229,13 +242,36 @@ const Feed = ({ refreshTrigger = 0 }: FeedProps) => {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [currentUser?.id]);
 
   useEffect(() => {
+    setVisibleCount(10);
     loadPosts();
   }, [refreshTrigger, loadPosts]);
 
+ 
+  useEffect(() => {
+    if (!sentinelRef.current) return;
+
+    const observer = new IntersectionObserver((entries) => {
+      const first = entries[0];
+      if (first.isIntersecting) {
+        setVisibleCount((prev) => prev + 5);
+      }
+    });
+
+    observer.observe(sentinelRef.current);
+
+    return () => {
+      observer.disconnect();
+    };
+  }, []);
+
   const handleLike = async (postId: string) => {
+    if (!isAuthenticated) {
+      setShowAuthModal(true);
+      return;
+    }
     try {
       const uiPost = allPosts.find((p) => p.id === postId);
       if (!uiPost) return;
@@ -308,13 +344,46 @@ const Feed = ({ refreshTrigger = 0 }: FeedProps) => {
 
   return (
     <div className="space-y-6">
-      {allPosts.map((post) => (
+      {allPosts.slice(0, visibleCount).map((post) => (
         <Post
           key={post.id}
           post={post}
           onLike={() => handleLike(post.id)}
+          isAuthenticated={isAuthenticated}
+          onAuthRequired={() => setShowAuthModal(true)}
         />
       ))}
+
+      {/* Sentinel for infinite scroll */}
+      <div ref={sentinelRef} className="h-1" />
+
+      {/* Auth required modal */}
+      {showAuthModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+          <div className="bg-white rounded-lg shadow-xl max-w-sm w-full p-6">
+            <h2 className="text-lg font-semibold mb-2 text-gray-900">
+              Sign in to continue
+            </h2>
+            <p className="text-sm text-gray-600 mb-4">
+              You need to be signed in to like posts or add comments.
+            </p>
+            <div className="flex justify-end space-x-2">
+              <button
+                onClick={() => setShowAuthModal(false)}
+                className="px-3 py-1.5 text-sm rounded-md border border-gray-300 text-gray-700 hover:bg-gray-50"
+              >
+                Cancel
+              </button>
+              <a
+                href="/login"
+                className="px-3 py-1.5 text-sm rounded-md bg-blue-600 text-white hover:bg-blue-700"
+              >
+                Sign in
+              </a>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

@@ -10,25 +10,27 @@ interface PostProps {
     user: {
       name: string;
       avatar: string;
-      time: string; 
+      time: string;
       verified: boolean;
     };
     content: string;
     images: string[];
     likes: number;
-    comments: { 
-      id: string; 
-      authorName: string; 
-      text: string; 
-      createdAt: string 
+    comments: {
+      id: string;
+      authorName: string;
+      text: string;
+      createdAt: string;
     }[];
     shares: number;
     liked: boolean;
   };
-  onLike: (postId: string) => void;
+  onLike: () => void;
+  isAuthenticated: boolean;
+  onAuthRequired: () => void;
 }
 
-const Post: React.FC<PostProps> = ({ post, onLike }) => {
+const Post: React.FC<PostProps> = ({ post, onLike, isAuthenticated, onAuthRequired }) => {
   const [showComments, setShowComments] = useState(false);
   const [commentText, setCommentText] = useState('');
   const [comments, setComments] = useState(post.comments || []);
@@ -92,18 +94,28 @@ const Post: React.FC<PostProps> = ({ post, onLike }) => {
   };
 
   const handleReaction = (reactionType: ReactionType) => {
+    if (!isAuthenticated) {
+      onAuthRequired();
+      return;
+    }
+
     setReaction(reactionType);
-    onLike(post.id);
+    onLike();
     setShowReactions(false);
   };
 
   const handleLikeButtonClick = () => {
+    if (!isAuthenticated) {
+      onAuthRequired();
+      return;
+    }
+
     if (reaction === 'like') {
       setReaction(null);
-      onLike(post.id);
+      onLike();
     } else {
       setReaction('like');
-      onLike(post.id);
+      onLike();
     }
   };
 
@@ -161,6 +173,11 @@ const Post: React.FC<PostProps> = ({ post, onLike }) => {
 
   const handleSubmitComment = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!isAuthenticated) {
+      onAuthRequired();
+      return;
+    }
+
     if (commentText.trim()) {
       const newComment = {
         id: Math.random().toString(),

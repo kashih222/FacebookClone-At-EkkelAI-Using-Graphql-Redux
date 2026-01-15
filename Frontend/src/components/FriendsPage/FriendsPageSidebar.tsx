@@ -31,10 +31,10 @@ const FriendsPageSidebar = () => {
   return (
     <div className="">
       {/* Hamburger Button - Mobile & Desktop */}
-      <div className="">
+      <div className="mt-18 lg:mt-16">
         <button
           onClick={toggleSidebar}
-          className="lg:hidden fixed top-32 left-4 z-50 w-10 h-10 flex items-center justify-center rounded-full bg-white shadow-md hover:bg-gray-100"
+          className="lg:hidden fixed top-32 md:top-34 left-4 z-50 w-10 h-10 flex items-center justify-center rounded-full bg-white shadow-md hover:bg-gray-100"
         >
           <Menu className="w-5 h-5" />
         </button>
