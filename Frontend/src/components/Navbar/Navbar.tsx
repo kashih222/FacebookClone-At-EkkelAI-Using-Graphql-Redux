@@ -1,7 +1,29 @@
 import React, { useEffect, useState } from "react";
 import { Link, NavLink, useNavigate } from "react-router-dom";
-import { FaFacebook, FaSearch, FaHome, FaPlayCircle, FaStore, FaUsers, FaGamepad, FaBell, FaCommentDots, FaCaretDown, FaBars, FaTimes,} from "react-icons/fa";
-import { LogOut, Logs, MessageCircleQuestionMark, MessageSquareDot, Moon, Settings, UserRoundPen } from "lucide-react";
+import {
+  FaFacebook,
+  FaSearch,
+  FaHome,
+  FaPlayCircle,
+  FaStore,
+  FaUsers,
+  FaGamepad,
+  FaBell,
+  FaCommentDots,
+  FaCaretDown,
+  FaBars,
+  FaTimes,
+} from "react-icons/fa";
+import {
+  LogOut,
+  Logs,
+  MessageCircleQuestionMark,
+  MessageSquareDot,
+  Moon,
+  Settings,
+  User,
+  UserRoundPen,
+} from "lucide-react";
 import { useAppDispatch, useAppSelector } from "../../Redux Toolkit/hooks";
 import { fetchMe, clearUser } from "../../Redux Toolkit/slices/userSlice";
 import { LOGOUT_MUTATION } from "../../GraphqlOprations/mutations";
@@ -32,7 +54,7 @@ const Navbar = () => {
 
   return (
     <nav className="fixed top-0 w-full z-50 bg-white shadow-sm border-b border-gray-200">
-      <div className="mx-auto px-3 sm:px-4 md:px-6 w-full">
+      <div className=" px-3 sm:px-4 md:px-6 w-full">
         {/* Main Navbar */}
         <div className="flex items-center justify-between h-14 md:h-16">
           {/* Left Section: Logo & Search */}
@@ -42,7 +64,7 @@ const Navbar = () => {
             </Link>
             {/* Search Bar - Desktop */}
             <form onSubmit={handleSearch} className=" relative flex-1 ">
-              <div className="relative w-50">
+              <div className="sm:hidden lg:inline-block relative w-50">
                 <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
                 <input
                   type="text"
@@ -412,37 +434,47 @@ const Navbar = () => {
         </div>
 
         {/* Mobile Bottom Navigation */}
-        <div className="md:hidden flex items-center w-full justify-between py-2 border-t border-gray-200">
-          <Link to={"/"}>
+       <div className="w-full items-center justify-center">
+         <div className="lg:hidden flex items-center w-full justify-center gap-13 md:gap-22 py-2 border-t border-gray-200">
+          <NavLink to={"/"}>
             <button className="flex flex-col items-center flex-1 text-blue-600">
               <FaHome className="text-xl" />
               <span className="text-xs mt-1">Home</span>
             </button>
-          </Link>
+          </NavLink>
 
-          <button className="flex flex-col items-center flex-1 text-gray-500">
-            <FaPlayCircle className="text-xl" />
-            <span className="text-xs mt-1">Watch</span>
+          <NavLink to={"/friends"}>
+            <button className="flex flex-col items-center flex-1 text-gray-500">
+            <User className="text-xl" />
+            <span className="text-xs mt-1">Friends</span>
           </button>
+          </NavLink>
 
-          <button className="flex flex-col items-center flex-1 text-gray-500">
+          <NavLink to={"#"}>
+            <button className="flex flex-col items-center flex-1 text-gray-500">
             <FaUsers className="text-xl" />
             <span className="text-xs mt-1">Groups</span>
           </button>
+          </NavLink>
 
-          <button className="flex flex-col items-center flex-1 text-gray-500 relative">
+          <NavLink to={"#"}>
+            <button className="flex flex-col items-center flex-1 text-gray-500 relative">
             <FaBell className="text-xl" />
             <span className="absolute -top-1 right-6 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
               5
             </span>
             <span className="text-xs mt-1">Notifs</span>
           </button>
+          </NavLink>
 
-          <button className="flex flex-col items-center flex-1 text-gray-500">
+          <NavLink to={"#"}>
+            <button className="flex flex-col items-center flex-1 text-gray-500">
             <FaCommentDots className="text-xl" />
             <span className="text-xs mt-1">Chat</span>
           </button>
+          </NavLink>
         </div>
+       </div>
       </div>
     </nav>
   );

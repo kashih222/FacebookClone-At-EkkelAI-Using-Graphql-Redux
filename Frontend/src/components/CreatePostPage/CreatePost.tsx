@@ -196,47 +196,47 @@ const CreatePost = ({ onPostCreated }: CreatePostProps) => {
 
   return (
     <>
-      <div className="bg-white rounded-lg shadow-sm p-4 mb-4 flex items-center gap-2  w-full">
-        <div className="flex items-center space-x-3 w-full">
+      <div className="bg-white rounded-lg shadow-sm p-3 sm:p-4 mb-3 sm:mb-4 flex items-center gap-2 w-full">
+        <div className="flex items-center space-x-2 sm:space-x-3 w-full flex-1 min-w-0">
          <Link to={"/myprofile"}>
-          <div className="w-10 h-10 bg-linear-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center text-white font-bold">
+          <div className="w-8 h-8 sm:w-10 sm:h-10 bg-linear-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center text-white font-bold text-sm sm:text-base shrink-0">
             {initials}
           </div>
          </Link>
           <button
             onClick={() => setShowModal(true)}
-            className="flex-1 text-left w-full cursor-pointer bg-gray-100 hover:bg-gray-200 text-gray-500 rounded-full px-4 py-3 transition-colors"
+            className="flex-1 text-left w-full cursor-pointer bg-gray-100 hover:bg-gray-200 text-gray-500 rounded-full px-3 sm:px-4 py-1 sm:py-3 transition-colors min-w-0"
           >
-            <span className="font-medium">
+            <span className="font-medium text-[10px] sm:text-base truncate">
               {"What's on your mind, " + (me?.firstName || "User") + "?"}
             </span>
           </button>
         </div>
 
-        <div className="flex items-center justify-between">
-          <div className="flex space-x-2">
+        <div className="flex items-center justify-between shrink-0">
+          <div className="flex space-x-1 sm:space-x-2">
             <button
               onClick={() => setShowModal(true)}
-              className="flex items-center space-x-2 px-3 py-2 rounded-lg hover:bg-gray-100 transition-colors"
+              className="flex items-center space-x-1 sm:space-x-2 px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg hover:bg-gray-100 transition-colors"
             >
-              <span className={` text-red-500`}>
-                <Video className="w-10 h-10 cursor-pointer" />
+              <span className="text-red-500">
+                <Video className="w-6 h-6 sm:w-10 sm:h-10 cursor-pointer" />
               </span>
             </button>
             <button
               onClick={() => setShowModal(true)}
-              className="flex items-center space-x-2 px-3 py-2 rounded-lg hover:bg-gray-100 transition-colors"
+              className="flex items-center space-x-1 sm:space-x-2 px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg hover:bg-gray-100 transition-colors"
             >
-              <span className={`text-xl text-green-500`}>
-                <BookImage className="w-8 h-8 cursor-pointer" />
+              <span className="text-green-500">
+                <BookImage className="w-5 h-5 sm:w-8 sm:h-8 cursor-pointer" />
               </span>
             </button>
             <button
               onClick={() => setShowModal(true)}
-              className="flex items-center space-x-2 px-3 py-2 rounded-lg hover:bg-gray-100 transition-colors"
+              className="flex items-center space-x-1 sm:space-x-2 px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg hover:bg-gray-100 transition-colors  sm:flex"
             >
-              <span className={`text-xl text-yellow-500`}>
-                <Smile className="w-8 h-8 cursor-pointer" />
+              <span className="text-yellow-500">
+                <Smile className="w-5 h-5 sm:w-8 sm:h-8 cursor-pointer" />
               </span>
             </button>
           </div>
@@ -244,43 +244,43 @@ const CreatePost = ({ onPostCreated }: CreatePostProps) => {
       </div>
 
       {showModal && (
-        <div className="fixed inset-0 backdrop-blur-sm  flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-xl w-full max-w-xl">
-            <div className="p-4 border-b border-gray-300 flex  items-center w-full">
-              <h2 className="text-xl font-bold text-gray-800 w-full text-center">
+        <div className="fixed inset-0 backdrop-blur-sm flex items-center justify-center z-50 p-2 sm:p-4">
+          <div className="bg-white rounded-lg sm:rounded-xl w-full max-w-xl max-h-[90vh] overflow-hidden flex flex-col">
+            <div className="p-3 sm:p-4 border-b border-gray-300 flex items-center w-full shrink-0">
+              <h2 className="text-lg sm:text-xl font-bold text-gray-800 w-full text-center">
                 Create Post
               </h2>
               <button
                 onClick={() => setShowModal(false)}
-                className="text-gray-500 hover:text-gray-700 text-2xl w-8 h-8 flex items-center justify-center hover:bg-gray-100 rounded-full"
+                className="text-gray-500 hover:text-gray-700 text-2xl w-8 h-8 flex items-center justify-center hover:bg-gray-100 rounded-full shrink-0"
               >
                 &times;
               </button>
             </div>
 
-            <div className="p-4">
-              <div className="flex items-center space-x-3 mb-4">
-                <div className="w-10 h-10 bg-linear-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center text-white font-bold">
+            <div className="p-3 sm:p-4 overflow-y-auto flex-1">
+              <div className="flex items-center space-x-2 sm:space-x-3 mb-3 sm:mb-4">
+                <div className="w-8 h-8 sm:w-10 sm:h-10 bg-linear-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center text-white font-bold text-sm sm:text-base shrink-0">
                   {initials}
                 </div>
-                <div className="relative inline-block">
-                  <p className="font-semibold">{displayName}</p>
+                <div className="relative inline-block flex-1 min-w-0">
+                  <p className="font-semibold text-sm sm:text-base truncate">{displayName}</p>
 
                   <button
                     onClick={() => setOpen(!open)}
-                    className="flex items-center cursor-pointer space-x-1 bg-gray-100 hover:bg-gray-200 px-3 py-1 rounded-full text-sm mt-1"
+                    className="flex items-center cursor-pointer space-x-1 bg-gray-100 hover:bg-gray-200 px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm mt-1"
                   >
                     <span className="text-gray-600">
-                      <Globe className="w-4 h-4" />
+                      <Globe className="w-3 h-3 sm:w-4 sm:h-4" />
                     </span>
-                    <span className="font-medium text-gray-700">
+                    <span className="font-medium text-gray-700 text-xs sm:text-sm">
                       {visibility}
                     </span>
-                    <span className="text-gray-500">▼</span>
+                    <span className="text-gray-500 text-xs">▼</span>
                   </button>
 
                   {open && (
-                    <div className="absolute mt-2 w-32 bg-white border rounded-lg  shadow-md z-10 ">
+                    <div className="absolute mt-2 w-28 sm:w-32 bg-white border rounded-lg shadow-md z-10">
                       {options.map((option) => (
                         <button
                           key={option}
@@ -288,7 +288,7 @@ const CreatePost = ({ onPostCreated }: CreatePostProps) => {
                             setVisibility(option);
                             setOpen(false);
                           }}
-                          className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100"
+                          className="block w-full text-left px-3 sm:px-4 py-2 text-xs sm:text-sm hover:bg-gray-100"
                         >
                           {option}
                         </button>
@@ -304,7 +304,7 @@ const CreatePost = ({ onPostCreated }: CreatePostProps) => {
                 placeholder={
                   "What's on your mind, " + (me?.firstName || "User") + "?"
                 }
-                className="w-full h-10 p-3 text-lg border-0 focus:outline-none resize-none placeholder-gray-500"
+                className="w-full min-h-24 sm:min-h-32 p-3 text-sm sm:text-lg border-0 focus:outline-none resize-none placeholder-gray-500"
                 autoFocus
               />
               <div className="mt-3">
@@ -314,10 +314,10 @@ const CreatePost = ({ onPostCreated }: CreatePostProps) => {
                   accept="image/*"
                   multiple
                   onChange={(e) => setFiles(Array.from(e.target.files || []))}
-                  className="block w-full text-sm text-gray-700"
+                  className="block w-full text-xs sm:text-sm text-gray-700"
                 />
                 {files.length > 0 && (
-                  <div className="mt-3 grid grid-cols-3 gap-2">
+                  <div className="mt-3 grid grid-cols-2 sm:grid-cols-3 gap-2">
                     {files.map((f, idx) => (
                       <div
                         key={idx}
@@ -334,7 +334,7 @@ const CreatePost = ({ onPostCreated }: CreatePostProps) => {
                           }
                           className="absolute top-1 right-1 bg-black/50 text-white rounded-full p-1 hover:bg-black/70 transition-colors"
                         >
-                          <X className="w-4 h-4" />
+                          <X className="w-3 h-3 sm:w-4 sm:h-4" />
                         </button>
                       </div>
                     ))}
@@ -343,45 +343,45 @@ const CreatePost = ({ onPostCreated }: CreatePostProps) => {
               </div>
             </div>
 
-            <div className="p-4 border-t border-gray-300">
-              <div className="flex justify-between items-center">
-                <div className="flex space-x-2">
+            <div className="p-3 sm:p-4 border-t border-gray-300 shrink-0">
+              <div className="flex justify-between items-center flex-wrap gap-2">
+                <div className="flex space-x-1 sm:space-x-2">
                   <button
                     onClick={() => setShowModal(true)}
-                    className="flex items-center space-x-2 px-3 py-2 rounded-lg hover:bg-gray-100 transition-colors"
+                    className="flex items-center space-x-1 sm:space-x-2 px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg hover:bg-gray-100 transition-colors"
                   >
-                    <span className={` text-red-500`}>
-                      <Video className="w-10 h-10" />
+                    <span className="text-red-500">
+                      <Video className="w-6 h-6 sm:w-10 sm:h-10" />
                     </span>
                   </button>
                   <button
                     onClick={() => fileInputRef.current?.click()}
-                    className="flex items-center space-x-2 px-3 py-2 rounded-lg hover:bg-gray-100 transition-colors"
+                    className="flex items-center space-x-1 sm:space-x-2 px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg hover:bg-gray-100 transition-colors"
                   >
-                    <span className={`text-xl text-green-500`}>
-                      <BookImage className="w-8 h-8" />
+                    <span className="text-green-500">
+                      <BookImage className="w-5 h-5 sm:w-8 sm:h-8" />
                     </span>
                   </button>
                   <button
                     onClick={() => setShowModal(true)}
-                    className="flex items-center space-x-2 px-3 py-2 rounded-lg hover:bg-gray-100 transition-colors"
+                    className="flex items-center space-x-1 sm:space-x-2 px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg hover:bg-gray-100 transition-colors  sm:flex"
                   >
-                    <span className={`text-xl text-yellow-500`}>
-                      <Smile className="w-8 h-8" />
+                    <span className="text-yellow-500">
+                      <Smile className="w-5 h-5 sm:w-8 sm:h-8" />
                     </span>
                   </button>
                 </div>
                 <div className="flex space-x-2">
                   <button
                     onClick={() => setShowModal(false)}
-                    className="px-6 py-2 text-gray-600 hover:text-gray-800 font-medium"
+                    className="px-4 sm:px-6 py-1.5 sm:py-2 text-gray-600 hover:text-gray-800 font-medium text-sm sm:text-base"
                   >
                     Cancel
                   </button>
                   <button
                     onClick={handlePostSubmit}
                     disabled={!postText.trim()}
-                    className={`px-6 py-2 rounded-md font-bold ${
+                    className={`px-4 sm:px-6 py-1.5 sm:py-2 rounded-md font-bold text-sm sm:text-base ${
                       postText.trim()
                         ? "bg-blue-600 text-white hover:bg-blue-700"
                         : "bg-gray-200 text-gray-400 cursor-not-allowed"

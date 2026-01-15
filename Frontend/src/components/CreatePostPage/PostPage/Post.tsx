@@ -191,59 +191,59 @@ const Post: React.FC<PostProps> = ({ post, onLike }) => {
   };
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-200">
+    <div className="bg-white rounded-lg sm:rounded-xl shadow-sm border border-gray-200 mb-3 sm:mb-4">
       {/* Post Header */}
       <div className="">
-        <div className="flex items-center justify-between p-4">
-          <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 bg-linear-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center text-white font-bold text-lg cursor-pointer">
+        <div className="flex items-center justify-between p-3 sm:p-4">
+          <div className="flex items-center space-x-2 sm:space-x-3 flex-1 min-w-0">
+            <div className="w-8 h-8 sm:w-10 sm:h-10 bg-linear-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center text-white font-bold text-sm sm:text-lg cursor-pointer shrink-0">
               {post.user.avatar}
             </div>
-            <div>
-              <div className="flex items-center space-x-2 cursor-pointer">
-                <h3 className="font-bold text-gray-900">{post.user.name}</h3>
+            <div className="min-w-0 flex-1">
+              <div className="flex items-center space-x-1 sm:space-x-2 cursor-pointer">
+                <h3 className="font-bold text-gray-900 text-sm sm:text-base truncate">{post.user.name}</h3>
               </div>
-              <div title="Public" className="flex items-center space-x-2 text-sm text-gray-500 cursor-pointer">
-                <span>{post.user.time}</span>
-                <span><Globe  className='w-4 h-4'/></span>
+              <div title="Public" className="flex items-center space-x-1 sm:space-x-2 text-xs sm:text-sm text-gray-500 cursor-pointer">
+                <span className="truncate">{post.user.time}</span>
+                <span><Globe className='w-3 h-3 sm:w-4 sm:h-4 shrink-0'/></span>
               </div>
             </div>
           </div>
-          <button className="text-gray-500 hover:text-gray-700">
-            <MoreHorizontal className="w-5 h-5 cursor-pointer" />
+          <button className="text-gray-500 hover:text-gray-700 shrink-0 ml-2">
+            <MoreHorizontal className="w-4 h-4 sm:w-5 sm:h-5 cursor-pointer" />
           </button>
         </div>
 
         {/* Post Content */}
-        <div className="mt-4 ">
-          <p className="text-gray-800 px-4 text-lg whitespace-pre-line leading-relaxed">
+        <div className="mt-2 sm:mt-4">
+          <p className="text-gray-800 px-3 sm:px-4 text-sm sm:text-lg whitespace-pre-line leading-relaxed wrap-break-words">
             {post.content}
           </p>
           
           {/* Post Media */}
           {post.images && post.images.length > 0 && (
-            <div className="mt-4  overflow-hidden">
+            <div className="mt-2 sm:mt-4 overflow-hidden">
               {post.images.length === 1 && (
-                <MediaItem url={post.images[0]} alt="Post media" className="w-full  object-cover" />
+                <MediaItem url={post.images[0]} alt="Post media" className="w-full object-cover max-h-96 sm:max-h-125" />
               )}
               {post.images.length === 2 && (
-                <div className="grid grid-cols-2 gap-2">
+                <div className="grid grid-cols-2 gap-1 sm:gap-2">
                   {post.images.slice(0, 2).map((url, idx) => (
-                    <MediaItem key={idx} url={url} alt={`Post media ${idx + 1}`} className="w-full h-64 object-cover" />
+                    <MediaItem key={idx} url={url} alt={`Post media ${idx + 1}`} className="w-full h-40 sm:h-64 object-cover" />
                   ))}
                 </div>
               )}
               {post.images.length >= 3 && (
-                <div className="grid grid-cols-2 gap-2">
-                  <MediaItem url={post.images[0]} alt="Post media 1" className="col-span-2 w-full  object-cover" />
+                <div className="grid grid-cols-2 gap-1 sm:gap-2">
+                  <MediaItem url={post.images[0]} alt="Post media 1" className="col-span-2 w-full object-cover max-h-64 sm:max-h-96" />
                   {post.images.slice(1, 4).map((url, idx) => {
                     const isOverflow = idx === 2 && post.images.length > 4;
                     return (
                       <div key={idx} className="relative">
-                        <MediaItem url={url} alt={`Post media ${idx + 2}`} className="w-full  object-cover" />
+                        <MediaItem url={url} alt={`Post media ${idx + 2}`} className="w-full h-32 sm:h-40 object-cover" />
                         {isOverflow && (
                           <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
-                            <span className="text-white font-semibold text-xl">
+                            <span className="text-white font-semibold text-base sm:text-xl">
                               +{post.images.length - 4}
                             </span>
                           </div>
@@ -258,64 +258,65 @@ const Post: React.FC<PostProps> = ({ post, onLike }) => {
         </div>
 
         {/* Post Stats */}
-        <div className=" pt-3 px-4 border-t border-gray-200">
-          <div className="flex items-center justify-between text-gray-600">
-            <div className="flex items-center space-x-4">
+        <div className="pt-2 sm:pt-3 px-3 sm:px-4 border-t border-gray-200">
+          <div className="flex items-center justify-between text-gray-600 flex-wrap gap-2">
+            <div className="flex items-center space-x-2 sm:space-x-4 flex-wrap">
               <div className="flex items-center">
                 <div className="flex -space-x-2">
-                  <div className="w-5 h-5 bg-blue-500 rounded-full flex items-center justify-center text-white text-xs">
+                  <div className="w-4 h-4 sm:w-5 sm:h-5 bg-blue-500 rounded-full flex items-center justify-center text-white text-xs">
                     <FaThumbsUp />
                   </div>
-                  <div className="w-5 h-5 bg-red-500 rounded-full flex items-center justify-center text-white text-xs">
+                  <div className="w-4 h-4 sm:w-5 sm:h-5 bg-red-500 rounded-full flex items-center justify-center text-white text-xs">
                     <FaHeart />
                   </div>
                 </div>
-                <span className="ml-2 text-sm">{formatNumber(post.likes)}</span>
+                <span className="ml-1 sm:ml-2 text-xs sm:text-sm">{formatNumber(post.likes)}</span>
               </div>
               
               <button 
                 onClick={() => setShowComments(!showComments)}
-                className="text-sm  cursor-pointer"
+                className="text-xs sm:text-sm cursor-pointer"
               >
                 {formatNumber(post.comments.length)} comments
               </button>
               
-              <span className="text-sm">{formatNumber(post.shares)} shares</span>
+              <span className="text-xs sm:text-sm">{formatNumber(post.shares)} shares</span>
             </div>
           </div>
         </div>
       </div>
 
       {/* Post Actions with Reactions */}
-      <div className="border-gray-200 px-4 ">
+      <div className=" border-gray-200 px-2 sm:px-4">
         <div className="flex items-center relative">
           {/* Like Button with Reactions */}
           <div 
-            className="relative flex-1 "
+            className="relative flex-1"
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
+            onTouchStart={() => setShowReactions(true)}
             ref={reactionsRef}
           >
             <button
               onClick={handleLikeButtonClick}
-              className={`w-full flex items-center justify-center py-3 space-x-2 ${
+              className={`w-full flex items-center justify-center py-2 sm:py-3 space-x-1 sm:space-x-2 ${
                 reaction ? 'text-blue-600' : 'text-gray-600 hover:text-gray-800'
               }`}
             >
               {reaction ? (
-                <div className="flex items-center space-x-2">
-                  <span className="text-xl ">
+                <div className="flex items-center space-x-1 sm:space-x-2">
+                  <span className="text-lg sm:text-xl">
                     {reactions.find(r => r.type === reaction)?.icon}
                   </span>
-                  <span className="font-medium">
+                  <span className="font-medium text-xs sm:text-sm hidden sm:inline">
                     {reactions.find(r => r.type === reaction)?.label}
                   </span>
                 </div>
               ) : (
                 <>
-                 <div className='cursor-pointer flex gap-2 items-center '>
-                   <ThumbsUp className="w-5 h-5 " />
-                  <span className="font-medium ">Like</span>
+                 <div className='cursor-pointer flex gap-1 sm:gap-2 items-center'>
+                   <ThumbsUp className="w-4 h-4 sm:w-5 sm:h-5" />
+                  <span className="font-medium text-xs sm:text-sm">Like</span>
                  </div>
                 </>
               )}
@@ -323,10 +324,10 @@ const Post: React.FC<PostProps> = ({ post, onLike }) => {
 
             {/* Reactions Popup */}
             {showReactions && (
-              <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 bg-white rounded-full shadow-lg border border-gray-200 p-1 flex items-center space-x-1 z-50 ">
+              <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 bg-white rounded-full shadow-lg border border-gray-200 p-1 flex items-center space-x-1 z-50">
                 {reactions.map((react) => (
                   <button
-                    className='cursor-pointer'
+                    className='cursor-pointer text-lg sm:text-xl p-1'
                     key={react.type}
                     onClick={() => handleReaction(react.type)}
                     onMouseEnter={() => setReaction(react.type)}
@@ -334,6 +335,7 @@ const Post: React.FC<PostProps> = ({ post, onLike }) => {
                       if (!post.liked) setReaction(null);
                       else setReaction('like');
                     }}
+                    onTouchEnd={() => handleReaction(react.type)}
                     title={react.label}
                   >
                     {react.icon}
@@ -346,27 +348,27 @@ const Post: React.FC<PostProps> = ({ post, onLike }) => {
           {/* Comment Button */}
           <button
             onClick={() => setShowComments(!showComments)}
-            className="flex-1 flex items-center justify-center py-3 space-x-2 text-gray-600 hover:text-gray-800 cursor-pointer"
+            className="flex-1 flex items-center justify-center py-2 sm:py-3 space-x-1 sm:space-x-2 text-gray-600 hover:text-gray-800 cursor-pointer"
           >
-            <MessageCircle className="w-5 h-5" />
-            <span className="font-medium">Comment</span>
+            <MessageCircle className="w-4 h-4 sm:w-5 sm:h-5" />
+            <span className="font-medium text-xs sm:text-sm hidden sm:inline">Comment</span>
           </button>
           
           {/* Share Button */}
-          <button className="flex-1 flex items-center justify-center py-3 space-x-2 text-gray-600 hover:text-gray-800 cursor-pointer">
-            <Share2 className="w-5 h-5" />
-            <span className="font-medium">Share</span>
+          <button className="flex-1 flex items-center justify-center py-2 sm:py-3 space-x-1 sm:space-x-2 text-gray-600 hover:text-gray-800 cursor-pointer">
+            <Share2 className="w-4 h-4 sm:w-5 sm:h-5" />
+            <span className="font-medium text-xs sm:text-sm hidden sm:inline">Share</span>
           </button>
         </div>
       </div>
 
       {/* Comments Section */}
       {showComments && (
-        <div className="border-t border-gray-200 p-4 bg-gray-50">
-          <form onSubmit={handleSubmitComment} className="mb-4">
+        <div className="border-t border-gray-200 p-3 sm:p-4 bg-gray-50">
+          <form onSubmit={handleSubmitComment} className="mb-3 sm:mb-4">
             <div className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center text-white">
-                <User className="w-4 h-4" />
+              <div className="w-7 h-7 sm:w-8 sm:h-8 bg-gray-300 rounded-full flex items-center justify-center text-white shrink-0">
+                <User className="w-3 h-3 sm:w-4 sm:h-4" />
               </div>
               <div className="flex-1 relative">
                 <input
@@ -374,17 +376,17 @@ const Post: React.FC<PostProps> = ({ post, onLike }) => {
                   value={commentText}
                   onChange={(e) => setCommentText(e.target.value)}
                   placeholder="Write a comment..."
-                  className="w-full px-4 py-2 bg-gray-100 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 sm:px-4 py-1.5 sm:py-2 bg-gray-100 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm sm:text-base"
                 />
-                <div className="absolute right-2 top-1/2 transform -translate-y-1/2 flex items-center space-x-1">
-                  <button type="button" className="text-gray-500 hover:text-gray-700">
-                    <Smile className="w-5 h-5" />
+                <div className="absolute right-1 sm:right-2 top-1/2 transform -translate-y-1/2 flex items-center space-x-1">
+                  <button type="button" className="text-gray-500 hover:text-gray-700 p-1">
+                    <Smile className="w-4 h-4 sm:w-5 sm:h-5" />
                   </button>
-                  <button type="button" className="text-gray-500 hover:text-gray-700">
+                  <button type="button" className="text-gray-500 hover:text-gray-700 p-1 hidden sm:block">
                     <ImageIcon className="w-5 h-5" />
                   </button>
-                  <button type="submit" className="text-blue-500 hover:text-blue-600">
-                    <Send className="w-5 h-5" />
+                  <button type="submit" className="text-blue-500 hover:text-blue-600 p-1">
+                    <Send className="w-4 h-4 sm:w-5 sm:h-5" />
                   </button>
                 </div>
               </div>
@@ -392,23 +394,22 @@ const Post: React.FC<PostProps> = ({ post, onLike }) => {
           </form>
 
           {/* Comments List */}
-          <div className="space-y-4">
+          <div className="space-y-3 sm:space-y-4">
             {comments.map(comment => (
-              <div key={comment.id} className="flex space-x-3">
-                <div className="w-8 h-8 bg-linear-to-r from-blue-400 to-purple-400 rounded-full flex items-center justify-center text-white text-sm">
+              <div key={comment.id} className="flex space-x-2 sm:space-x-3">
+                <div className="w-7 h-7 sm:w-8 sm:h-8 bg-linear-to-r from-blue-400 to-purple-400 rounded-full flex items-center justify-center text-white text-xs sm:text-sm shrink-0">
                   {comment.authorName.charAt(0)}
                 </div>
-                <div className="flex-1">
-                  <div className="bg-white rounded-2xl px-4 py-2">
-                    <div className="flex items-center justify-between">
-                      <h4 className="font-semibold text-sm">{comment.authorName}</h4>
+                <div className="flex-1 min-w-0">
+                  <div className="bg-white rounded-xl sm:rounded-2xl px-3 sm:px-4 py-2">
+                    <div className="flex items-center justify-between flex-wrap gap-1">
+                      <h4 className="font-semibold text-xs sm:text-sm">{comment.authorName}</h4>
                       <span className="text-xs text-gray-500">{formatCommentTime(comment.createdAt)}</span>
                     </div>
-                    <p className="text-gray-800 mt-1">{comment.text}</p>
-                    <div className="flex items-center space-x-4 mt-2 text-xs text-gray-500">
+                    <p className="text-gray-800 mt-1 text-sm sm:text-base wrap-break-words">{comment.text}</p>
+                    <div className="flex items-center space-x-3 sm:space-x-4 mt-2 text-xs text-gray-500">
                       <button className="hover:text-gray-700">Like</button>
                       <button className="hover:text-gray-700">Reply</button>
-                      <span></span>
                     </div>
                   </div>
                 </div>
@@ -417,7 +418,7 @@ const Post: React.FC<PostProps> = ({ post, onLike }) => {
           </div>
 
           {/* View All Comments */}
-          <button className="mt-4 text-blue-600 hover:text-blue-700 text-sm font-medium">
+          <button className="mt-3 sm:mt-4 text-blue-600 hover:text-blue-700 text-xs sm:text-sm font-medium">
             View more comments
           </button>
         </div>

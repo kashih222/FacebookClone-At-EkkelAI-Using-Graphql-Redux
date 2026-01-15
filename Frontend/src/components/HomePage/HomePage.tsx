@@ -10,25 +10,29 @@ const HomePage = () => {
   const [refreshTrigger, setRefreshTrigger] = useState(0);
 
   const handlePostCreated = () => {
-    // Increment refreshTrigger to trigger Feed refresh
     setRefreshTrigger(prev => prev + 1);
   };
 
+  
+
+ 
+
   return (
-    <div className="min-h-screen bg-gray-100 lg:mt-14 sm:mt-30">
+    <div className="min-h-screen bg-gray-100 mt-14  md:mt-32 lg:mt-14 ">
       <Navbar />
       
-      <div className=" mx-auto px-4 pt-4">
-        <div className="flex gap-4">
-          <div className="hidden lg:block w-74 shrink-0">
-            <LeftSidebar />
-          </div>
-          
-          <div className="flex-1 max-w-2xl mx-auto">
-             <div className="mb-4">
+      <div className="mx-auto px-2 sm:px-4 pt-2 sm:pt-4 pb-20 md:pb-4">
+       
+
+        <div className="flex gap-2 md:gap-4 mt-16 md:mt-0">
+             <div className="hidden xl:block shrink-0 w-74">
+              <LeftSidebar/>
+              </div>     
+          <div className="flex-1 max-w-2xl mx-auto w-full">
+             <div className="mb-3 sm:mb-4">
               <CreatePost onPostCreated={handlePostCreated} />
             </div>
-            <div className="mb-4">
+            <div className="mb-3 sm:mb-4">
               <Stories />
             </div>
            
@@ -37,7 +41,7 @@ const HomePage = () => {
             </div>
           </div>
           
-          <div className="hidden xl:block  shrink-0 w-74">
+          <div className="hidden xl:block shrink-0 w-74">
             <RightSidebar />
           </div>
 

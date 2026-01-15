@@ -2,7 +2,7 @@
 
 const LoginSignUpFooter = () => {
   return (
-    <div className="flex flex-col gap-4 bg-[#FFFFFF] text-[#8A8D91] w-full h-50 py-10 sm:px-8 md:px-40 ">
+    <div className="flex flex-col gap-4 bg-[#FFFFFF] text-[#8A8D91] w-full h-50 py-10 sm:px-8 md:px-40 p-4">
       <div className=" flex gap-4 text-[12px] ">
         <a className="hover:underline" href="English">English(UK)</a>
         <a className="hover:underline" href="اردو">اردو</a>

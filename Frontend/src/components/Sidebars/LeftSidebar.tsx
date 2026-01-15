@@ -16,6 +16,8 @@ import { fetchMe } from "../../Redux Toolkit/slices/userSlice";
 import { useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "../../Redux Toolkit/hooks";
 
+
+
 const LeftSidebar = () => {
   const dispatch = useAppDispatch();
   const me = useAppSelector((s) => s.user.user);
@@ -26,9 +28,10 @@ const LeftSidebar = () => {
   }, [dispatch]);
 
   return (
-    <div className="fixed top-18 h-[calc(100vh-90px)] w-74 ">
-      {/* User Profile */}
-      <div className="mb-6 h-[calc(100vh-150px)]  overflow-auto">
+    <>
+
+        {/* User Profile */}
+        <div className=" mb-6 h-[calc(100vh-150px)] lg:h-[calc(100vh-150px)] overflow-auto px-2 lg:px-0">
         <Link to={"/myprofile"}>
           <div className="flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-200 cursor-pointer">
             <div className="w-10 h-10 bg-linear-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center text-white font-bold">
@@ -137,7 +140,7 @@ const LeftSidebar = () => {
           ·<span className="text-gray-400">Meta © 2026</span>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 
